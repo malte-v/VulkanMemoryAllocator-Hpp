@@ -3,6 +3,12 @@ These bindings use all the handy stuff from `Vulkan-Hpp`: wrapper classes, type 
 
 Current VMA version: 2.2.0
 
+Warning: The bindings are not thoroughly tested yet. If you encounter any errors, please open an issue: https://github.com/malte-v/VulkanMemoryAllocator-Hpp/issues/new
+
+Setup
+--
+Just copy vk_mem_alloc.h and vk_mem_alloc.hpp to your project.
+
 Usage
 --
 ```c++
