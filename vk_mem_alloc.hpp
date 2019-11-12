@@ -1,3 +1,6 @@
+#ifndef AMD_VULKAN_MEMORY_ALLOCATOR_HPP
+#define AMD_VULKAN_MEMORY_ALLOCATOR_HPP
+
 #include "vk_mem_alloc.h"
 #include <vulkan/vulkan.hpp>
 
@@ -2538,3 +2541,5 @@ namespace VULKAN_HPP_NAMESPACE {
     };
   };
 }
+
+#endif
