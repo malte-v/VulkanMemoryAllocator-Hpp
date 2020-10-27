@@ -27,6 +27,7 @@ namespace VMA_HPP_NAMESPACE {
   struct RecordSettings;
   struct StatInfo;
   struct Stats;
+  struct Budget;
   struct VulkanFunctions;
 
   enum class MemoryUsage
@@ -35,7 +36,9 @@ namespace VMA_HPP_NAMESPACE {
     eGpuOnly = VMA_MEMORY_USAGE_GPU_ONLY,
     eCpuOnly = VMA_MEMORY_USAGE_CPU_ONLY,
     eCpuToGpu = VMA_MEMORY_USAGE_CPU_TO_GPU,
-    eGpuToCpu = VMA_MEMORY_USAGE_GPU_TO_CPU
+    eGpuToCpu = VMA_MEMORY_USAGE_GPU_TO_CPU,
+    eCpuCopy = VMA_MEMORY_USAGE_CPU_COPY,
+    eGpuLazilyAllocated = VMA_MEMORY_USAGE_GPU_LAZILY_ALLOCATED
   };
 
   VULKAN_HPP_INLINE std::string to_string( MemoryUsage value )
@@ -47,11 +50,13 @@ namespace VMA_HPP_NAMESPACE {
       case MemoryUsage::eCpuOnly : return "CpuOnly";
       case MemoryUsage::eCpuToGpu : return "CpuToGpu";
       case MemoryUsage::eGpuToCpu : return "GpuToCpu";
+      case MemoryUsage::eCpuCopy : return "CpuCopy";
+      case MemoryUsage::eGpuLazilyAllocated : return "GpuLazilyAllocated";
       default: return "invalid";
     }
   }
 
-  enum class AllocationCreateFlagBits
+  enum class AllocationCreateFlagBits : VmaAllocationCreateFlags
   {
     eDedicatedMemory = VMA_ALLOCATION_CREATE_DEDICATED_MEMORY_BIT,
     eNeverAllocate = VMA_ALLOCATION_CREATE_NEVER_ALLOCATE_BIT,
@@ -60,6 +65,8 @@ namespace VMA_HPP_NAMESPACE {
     eCanMakeOtherLost = VMA_ALLOCATION_CREATE_CAN_MAKE_OTHER_LOST_BIT,
     eUserDataCopyString = VMA_ALLOCATION_CREATE_USER_DATA_COPY_STRING_BIT,
     eUpperAddress = VMA_ALLOCATION_CREATE_UPPER_ADDRESS_BIT,
+    eDontBind = VMA_ALLOCATION_CREATE_DONT_BIND_BIT,
+    eWithinBudget = VMA_ALLOCATION_CREATE_WITHIN_BUDGET_BIT,
     eStrategyBestFit = VMA_ALLOCATION_CREATE_STRATEGY_BEST_FIT_BIT,
     eStrategyWorstFit = VMA_ALLOCATION_CREATE_STRATEGY_WORST_FIT_BIT,
     eStrategyFirstFit = VMA_ALLOCATION_CREATE_STRATEGY_FIRST_FIT_BIT,
@@ -80,6 +87,8 @@ namespace VMA_HPP_NAMESPACE {
       case AllocationCreateFlagBits::eCanMakeOtherLost : return "CanMakeOtherLost";
       case AllocationCreateFlagBits::eUserDataCopyString : return "UserDataCopyString";
       case AllocationCreateFlagBits::eUpperAddress : return "UpperAddress";
+      case AllocationCreateFlagBits::eDontBind : return "DontBind";
+      case AllocationCreateFlagBits::eWithinBudget : return "WithinBudget";
       case AllocationCreateFlagBits::eStrategyBestFit : return "StrategyBestFit";
       case AllocationCreateFlagBits::eStrategyWorstFit : return "StrategyWorstFit";
       case AllocationCreateFlagBits::eStrategyFirstFit : return "StrategyFirstFit";
@@ -87,7 +96,7 @@ namespace VMA_HPP_NAMESPACE {
     }
   }
 
-  using AllocationCreateFlags = VULKAN_HPP_NAMESPACE::Flags<AllocationCreateFlagBits, VmaAllocationCreateFlags>;
+  using AllocationCreateFlags = VULKAN_HPP_NAMESPACE::Flags<AllocationCreateFlagBits>;
 
   VULKAN_HPP_INLINE AllocationCreateFlags operator|( AllocationCreateFlagBits bit0, AllocationCreateFlagBits bit1 )
   {
@@ -111,6 +120,8 @@ namespace VMA_HPP_NAMESPACE {
     if ( value & AllocationCreateFlagBits::eCanMakeOtherLost ) result += "CanMakeOtherLost | ";
     if ( value & AllocationCreateFlagBits::eUserDataCopyString ) result += "UserDataCopyString | ";
     if ( value & AllocationCreateFlagBits::eUpperAddress ) result += "UpperAddress | ";
+    if ( value & AllocationCreateFlagBits::eDontBind ) result += "DontBind | ";
+    if ( value & AllocationCreateFlagBits::eWithinBudget ) result += "WithinBudget | ";
     if ( value & AllocationCreateFlagBits::eStrategyBestFit ) result += "StrategyBestFit | ";
     if ( value & AllocationCreateFlagBits::eStrategyWorstFit ) result += "StrategyWorstFit | ";
     if ( value & AllocationCreateFlagBits::eStrategyFirstFit ) result += "StrategyFirstFit | ";
@@ -120,10 +131,12 @@ namespace VMA_HPP_NAMESPACE {
     return "{ " + result.substr(0, result.size() - 3) + " }";
   }
 
-  enum class AllocatorCreateFlagBits
+  enum class AllocatorCreateFlagBits : VmaAllocatorCreateFlags
   {
     eExternallySynchronized = VMA_ALLOCATOR_CREATE_EXTERNALLY_SYNCHRONIZED_BIT,
-    eKhrDedicatedAllocation = VMA_ALLOCATOR_CREATE_KHR_DEDICATED_ALLOCATION_BIT
+    eKhrDedicatedAllocation = VMA_ALLOCATOR_CREATE_KHR_DEDICATED_ALLOCATION_BIT,
+    eKhrBindMemory2 = VMA_ALLOCATOR_CREATE_KHR_BIND_MEMORY2_BIT,
+    eExtMemoryBudget = VMA_ALLOCATOR_CREATE_EXT_MEMORY_BUDGET_BIT
   };
 
   VULKAN_HPP_INLINE std::string to_string( AllocatorCreateFlagBits value )
@@ -132,11 +145,13 @@ namespace VMA_HPP_NAMESPACE {
     {
       case AllocatorCreateFlagBits::eExternallySynchronized : return "ExternallySynchronized";
       case AllocatorCreateFlagBits::eKhrDedicatedAllocation : return "KhrDedicatedAllocation";
+      case AllocatorCreateFlagBits::eKhrBindMemory2 : return "KhrBindMemory2";
+      case AllocatorCreateFlagBits::eExtMemoryBudget : return "ExtMemoryBudget";
       default: return "invalid";
     }
   }
 
-  using AllocatorCreateFlags = VULKAN_HPP_NAMESPACE::Flags<AllocatorCreateFlagBits, VmaAllocatorCreateFlags>;
+  using AllocatorCreateFlags = VULKAN_HPP_NAMESPACE::Flags<AllocatorCreateFlagBits>;
 
   VULKAN_HPP_INLINE AllocatorCreateFlags operator|( AllocatorCreateFlagBits bit0, AllocatorCreateFlagBits bit1 )
   {
@@ -155,10 +170,12 @@ namespace VMA_HPP_NAMESPACE {
 
     if ( value & AllocatorCreateFlagBits::eExternallySynchronized ) result += "ExternallySynchronized | ";
     if ( value & AllocatorCreateFlagBits::eKhrDedicatedAllocation ) result += "KhrDedicatedAllocation | ";
+    if ( value & AllocatorCreateFlagBits::eKhrBindMemory2 ) result += "KhrBindMemory2 | ";
+    if ( value & AllocatorCreateFlagBits::eExtMemoryBudget ) result += "ExtMemoryBudget | ";
     return "{ " + result.substr(0, result.size() - 3) + " }";
   }
 
-  enum class DefragmentationFlagBits
+  enum class DefragmentationFlagBits : VmaDefragmentationFlags
   {};
 
   VULKAN_HPP_INLINE std::string to_string( DefragmentationFlagBits )
@@ -166,14 +183,14 @@ namespace VMA_HPP_NAMESPACE {
     return "(void)";
   }
 
-  using DefragmentationFlags = VULKAN_HPP_NAMESPACE::Flags<DefragmentationFlagBits, VmaDefragmentationFlags>;
+  using DefragmentationFlags = VULKAN_HPP_NAMESPACE::Flags<DefragmentationFlagBits>;
 
   VULKAN_HPP_INLINE std::string to_string( DefragmentationFlags  )
   {
     return "{}";
   }
 
-  enum class PoolCreateFlagBits
+  enum class PoolCreateFlagBits : VmaPoolCreateFlags
   {
     eIgnoreBufferImageGranularity = VMA_POOL_CREATE_IGNORE_BUFFER_IMAGE_GRANULARITY_BIT,
     eLinearAlgorithm = VMA_POOL_CREATE_LINEAR_ALGORITHM_BIT,
@@ -193,7 +210,7 @@ namespace VMA_HPP_NAMESPACE {
     }
   }
 
-  using PoolCreateFlags = VULKAN_HPP_NAMESPACE::Flags<PoolCreateFlagBits, VmaPoolCreateFlags>;
+  using PoolCreateFlags = VULKAN_HPP_NAMESPACE::Flags<PoolCreateFlagBits>;
 
   VULKAN_HPP_INLINE PoolCreateFlags operator|( PoolCreateFlagBits bit0, PoolCreateFlagBits bit1 )
   {
@@ -216,7 +233,7 @@ namespace VMA_HPP_NAMESPACE {
     return "{ " + result.substr(0, result.size() - 3) + " }";
   }
 
-  enum class RecordFlagBits
+  enum class RecordFlagBits : VmaRecordFlags
   {
     eFlushAfterCall = VMA_RECORD_FLUSH_AFTER_CALL_BIT
   };
@@ -230,7 +247,7 @@ namespace VMA_HPP_NAMESPACE {
     }
   }
 
-  using RecordFlags = VULKAN_HPP_NAMESPACE::Flags<RecordFlagBits, VmaRecordFlags>;
+  using RecordFlags = VULKAN_HPP_NAMESPACE::Flags<RecordFlagBits>;
 
   VULKAN_HPP_INLINE RecordFlags operator|( RecordFlagBits bit0, RecordFlagBits bit1 )
   {
@@ -350,6 +367,11 @@ namespace VMA_HPP_NAMESPACE {
     Stats calculateStats() const;
 #endif /*VULKAN_HPP_DISABLE_ENHANCED_MODE*/
 
+    void getBudget( Budget* pBudget ) const;
+#ifndef VULKAN_HPP_DISABLE_ENHANCED_MODE
+    Budget getBudget() const;
+#endif /*VULKAN_HPP_DISABLE_ENHANCED_MODE*/
+
 #ifdef VULKAN_HPP_DISABLE_ENHANCED_MODE
     VULKAN_HPP_NAMESPACE::Result checkCorruption( uint32_t memoryTypeBits ) const;
 #else
@@ -360,6 +382,18 @@ namespace VMA_HPP_NAMESPACE {
     VULKAN_HPP_NAMESPACE::Result checkPoolCorruption( Pool pool ) const;
 #else
     VULKAN_HPP_NAMESPACE::ResultValueType<void>::type checkPoolCorruption( Pool pool ) const;
+#endif /*VULKAN_HPP_DISABLE_ENHANCED_MODE*/
+
+#ifdef VULKAN_HPP_DISABLE_ENHANCED_MODE
+    void getPoolName( Pool pool, const char** ppName ) const;
+#else
+    const char* getPoolName( Pool pool ) const;
+#endif /*VULKAN_HPP_DISABLE_ENHANCED_MODE*/
+
+#ifdef VULKAN_HPP_DISABLE_ENHANCED_MODE
+  void setPoolName( Pool pool, const char* pName ) const;
+#else
+  void setPoolName( Pool pool, const char* pName ) const;
 #endif /*VULKAN_HPP_DISABLE_ENHANCED_MODE*/
 
     VULKAN_HPP_NAMESPACE::Result createBuffer( const VULKAN_HPP_NAMESPACE::BufferCreateInfo* pBufferCreateInfo, const AllocationCreateInfo* pAllocationCreateInfo, VULKAN_HPP_NAMESPACE::Buffer* pBuffer, Allocation* pAllocation, AllocationInfo* pAllocationInfo ) const;
@@ -975,9 +1009,16 @@ namespace VMA_HPP_NAMESPACE {
                              PFN_vkCreateImage vkCreateImage_ = nullptr,
                              PFN_vkDestroyImage vkDestroyImage_ = nullptr,
                              PFN_vkCmdCopyBuffer vkCmdCopyBuffer_ = nullptr
-#if VMA_DEDICATED_ALLOCATION
+#if VMA_DEDICATED_ALLOCATION || VMA_VULKAN_VERSION >= 1001000
                            , PFN_vkGetBufferMemoryRequirements2KHR vkGetBufferMemoryRequirements2KHR_ = nullptr,
                              PFN_vkGetImageMemoryRequirements2KHR vkGetImageMemoryRequirements2KHR_ = nullptr
+#endif
+#if VMA_BIND_MEMORY2 || VMA_VULKAN_VERSION >= 1001000
+                           , PFN_vkBindBufferMemory2KHR vkBindBufferMemory2KHR_ = nullptr,
+                             PFN_vkBindImageMemory2KHR vkBindImageMemory2KHR_ = nullptr
+#endif
+#if VMA_MEMORY_BUDGET || VMA_VULKAN_VERSION >= 1001000
+                           , PFN_vkGetPhysicalDeviceMemoryProperties2KHR vkGetPhysicalDeviceMemoryProperties2KHR_ = nullptr
 #endif
                              ) 
       : vkGetPhysicalDeviceProperties( vkGetPhysicalDeviceProperties_ )
@@ -997,9 +1038,16 @@ namespace VMA_HPP_NAMESPACE {
       , vkCreateImage( vkCreateImage_ )
       , vkDestroyImage( vkDestroyImage_ )
       , vkCmdCopyBuffer( vkCmdCopyBuffer_ )
-#if VMA_DEDICATED_ALLOCATION
+#if VMA_DEDICATED_ALLOCATION || VMA_VULKAN_VERSION >= 1001000
       , vkGetBufferMemoryRequirements2KHR(vkGetBufferMemoryRequirements2KHR_)
       , vkGetImageMemoryRequirements2KHR(vkGetImageMemoryRequirements2KHR_)
+#endif
+#if VMA_BIND_MEMORY2 || VMA_VULKAN_VERSION >= 1001000
+      , vkBindBufferMemory2KHR(vkBindBufferMemory2KHR_)
+      , vkBindImageMemory2KHR(vkBindImageMemory2KHR_)
+#endif
+#if VMA_MEMORY_BUDGET || VMA_VULKAN_VERSION >= 1001000
+      , vkGetPhysicalDeviceMemoryProperties2KHR(vkGetPhysicalDeviceMemoryProperties2KHR_)
 #endif
     {}
 
@@ -1116,7 +1164,7 @@ namespace VMA_HPP_NAMESPACE {
       return *this;
     }
 
-#if VMA_DEDICATED_ALLOCATION
+#if VMA_DEDICATED_ALLOCATION || VMA_VULKAN_VERSION >= 1001000
     VulkanFunctions & setVkGetBufferMemoryRequirements2KHR( PFN_vkGetBufferMemoryRequirements2KHR vkGetBufferMemoryRequirements2KHR_ )
     {
       vkGetBufferMemoryRequirements2KHR = vkGetBufferMemoryRequirements2KHR_;
@@ -1126,6 +1174,26 @@ namespace VMA_HPP_NAMESPACE {
     VulkanFunctions & setVkGetImageMemoryRequirements2KHR( PFN_vkGetImageMemoryRequirements2KHR vkGetImageMemoryRequirements2KHR_ )
     {
       vkGetImageMemoryRequirements2KHR = vkGetImageMemoryRequirements2KHR_;
+      return *this;
+    }
+#endif
+#if VMA_BIND_MEMORY2 || VMA_VULKAN_VERSION >= 1001000
+    VulkanFunctions & setVkBindBufferMemory2KHR( PFN_vkBindBufferMemory2KHR vkBindBufferMemory2KHR_ )
+    {
+      vkBindBufferMemory2KHR = vkBindBufferMemory2KHR_;
+      return *this;
+    }
+
+    VulkanFunctions & setVkBindImageMemory2KHR( PFN_vkBindImageMemory2KHR vkBindImageMemory2KHR_ )
+    {
+      vkBindImageMemory2KHR = vkBindImageMemory2KHR_;
+      return *this;
+    }
+#endif
+#if VMA_MEMORY_BUDGET || VMA_VULKAN_VERSION >= 1001000
+    VulkanFunctions & setVkGetPhysicalDeviceMemoryProperties2KHR( PFN_vkGetPhysicalDeviceMemoryProperties2KHR vkGetPhysicalDeviceMemoryProperties2KHR_ )
+    {
+      vkGetPhysicalDeviceMemoryProperties2KHR = vkGetPhysicalDeviceMemoryProperties2KHR_;
       return *this;
     }
 #endif
@@ -1159,9 +1227,16 @@ namespace VMA_HPP_NAMESPACE {
           && ( vkCreateImage == rhs.vkCreateImage )
           && ( vkDestroyImage == rhs.vkDestroyImage )
           && ( vkCmdCopyBuffer == rhs.vkCmdCopyBuffer )
-#if VMA_DEDICATED_ALLOCATION
+#if VMA_DEDICATED_ALLOCATION || VMA_VULKAN_VERSION >= 1001000
           && ( vkGetBufferMemoryRequirements2KHR == rhs.vkGetBufferMemoryRequirements2KHR )
           && ( vkGetImageMemoryRequirements2KHR == rhs.vkGetImageMemoryRequirements2KHR )
+#endif
+#if VMA_BIND_MEMORY2 || VMA_VULKAN_VERSION >= 1001000
+          && ( vkBindBufferMemory2KHR == rhs.vkBindBufferMemory2KHR )
+          && ( vkBindImageMemory2KHR == rhs.vkBindImageMemory2KHR )
+#endif
+#if VMA_MEMORY_BUDGET || VMA_VULKAN_VERSION >= 1001000
+          && ( vkGetPhysicalDeviceMemoryProperties2KHR == rhs.vkGetPhysicalDeviceMemoryProperties2KHR )
 #endif
           ;
     }
@@ -1189,9 +1264,16 @@ namespace VMA_HPP_NAMESPACE {
     PFN_vkCreateImage vkCreateImage;
     PFN_vkDestroyImage vkDestroyImage;
     PFN_vkCmdCopyBuffer vkCmdCopyBuffer;
-#if VMA_DEDICATED_ALLOCATION
+#if VMA_DEDICATED_ALLOCATION || VMA_VULKAN_VERSION >= 1001000
     PFN_vkGetBufferMemoryRequirements2KHR vkGetBufferMemoryRequirements2KHR;
     PFN_vkGetImageMemoryRequirements2KHR vkGetImageMemoryRequirements2KHR;
+#endif
+#if VMA_BIND_MEMORY2 || VMA_VULKAN_VERSION >= 1001000
+    PFN_vkBindBufferMemory2KHR vkBindBufferMemory2KHR;
+    PFN_vkBindImageMemory2KHR vkBindImageMemory2KHR;
+#endif
+#if VMA_MEMORY_BUDGET || VMA_VULKAN_VERSION >= 1001000
+    PFN_vkGetPhysicalDeviceMemoryProperties2KHR vkGetPhysicalDeviceMemoryProperties2KHR;
 #endif
   };
   static_assert( sizeof( VulkanFunctions ) == sizeof( VmaVulkanFunctions ), "struct and wrapper have different size!" );
@@ -1267,7 +1349,9 @@ namespace VMA_HPP_NAMESPACE {
                                  uint32_t frameInUseCount_ = 0,
                                  const VULKAN_HPP_NAMESPACE::DeviceSize* pHeapSizeLimit_ = nullptr,
                                  const VulkanFunctions* pVulkanFunctions_ = nullptr,
-                                 const RecordSettings* pRecordSettings_ = nullptr )
+                                 const RecordSettings* pRecordSettings_ = nullptr,
+                                 VULKAN_HPP_NAMESPACE::Instance instance_ = VULKAN_HPP_NAMESPACE::Instance(),
+                                 uint32_t vulkanApiVersion_ = VK_API_VERSION_1_0 )
       : flags( flags_ )
       , physicalDevice( physicalDevice_ )
       , device( device_ )
@@ -1278,6 +1362,8 @@ namespace VMA_HPP_NAMESPACE {
       , pHeapSizeLimit( pHeapSizeLimit_ )
       , pVulkanFunctions( pVulkanFunctions_ )
       , pRecordSettings( pRecordSettings_ )
+      , instance( instance_ )
+      , vulkanApiVersion( vulkanApiVersion_ )
     {}
 
     AllocatorCreateInfo( VmaAllocatorCreateInfo const & rhs )
@@ -1351,6 +1437,18 @@ namespace VMA_HPP_NAMESPACE {
       return *this;
     }
 
+    AllocatorCreateInfo & setInstance( VULKAN_HPP_NAMESPACE::Instance instance_ )
+    {
+      instance = instance_;
+      return *this;
+    }
+
+    AllocatorCreateInfo & setVulkanApiVersion( uint32_t vulkanApiVersion_ )
+    {
+      vulkanApiVersion = vulkanApiVersion_;
+      return *this;
+    }
+
     operator VmaAllocatorCreateInfo const&() const
     {
       return *reinterpret_cast<const VmaAllocatorCreateInfo*>( this );
@@ -1372,7 +1470,9 @@ namespace VMA_HPP_NAMESPACE {
           && ( frameInUseCount == rhs.frameInUseCount )
           && ( pHeapSizeLimit == rhs.pHeapSizeLimit )
           && ( pVulkanFunctions == rhs.pVulkanFunctions )
-          && ( pRecordSettings == rhs.pRecordSettings );
+          && ( pRecordSettings == rhs.pRecordSettings )
+          && ( instance == rhs.instance )
+          && ( vulkanApiVersion == rhs.vulkanApiVersion );
     }
 
     bool operator!=( AllocatorCreateInfo const& rhs ) const
@@ -1391,6 +1491,8 @@ namespace VMA_HPP_NAMESPACE {
     const VULKAN_HPP_NAMESPACE::DeviceSize* pHeapSizeLimit;
     const VulkanFunctions* pVulkanFunctions;
     const RecordSettings* pRecordSettings;
+    VULKAN_HPP_NAMESPACE::Instance instance;
+    uint32_t vulkanApiVersion;
   };
   static_assert( sizeof( AllocatorCreateInfo ) == sizeof( VmaAllocatorCreateInfo ), "struct and wrapper have different size!" );
   static_assert( std::is_standard_layout<AllocatorCreateInfo>::value, "struct wrapper is not a standard layout!" );
@@ -2039,6 +2141,84 @@ namespace VMA_HPP_NAMESPACE {
   };
   static_assert( sizeof( Stats ) == sizeof( VmaStats ), "struct and wrapper have different size!" );
   static_assert( std::is_standard_layout<Stats>::value, "struct wrapper is not a standard layout!" );
+  
+  struct Budget
+  {
+    Budget( VULKAN_HPP_NAMESPACE::DeviceSize blockBytes_ = {},
+            VULKAN_HPP_NAMESPACE::DeviceSize allocationBytes_ = {},
+            VULKAN_HPP_NAMESPACE::DeviceSize usage_ = {},
+            VULKAN_HPP_NAMESPACE::DeviceSize budget_ = {} )
+      : blockBytes( blockBytes_ )
+      , allocationBytes( allocationBytes_ )
+      , usage( usage_ )
+      , budget( budget_ )
+    {}
+
+    Budget( VmaBudget const & rhs )
+    {
+      *reinterpret_cast<VmaBudget*>(this) = rhs;
+    }
+
+    Budget& operator=( VmaBudget const & rhs )
+    {
+      *reinterpret_cast<VmaBudget*>(this) = rhs;
+      return *this;
+    }
+    
+    Budget & setBlockBytes( VULKAN_HPP_NAMESPACE::DeviceSize blockBytes_ )
+    {
+      blockBytes = blockBytes_;
+      return *this;
+    }
+
+    Budget & setAllocationBytes( VULKAN_HPP_NAMESPACE::DeviceSize allocationBytes_ )
+    {
+      allocationBytes = allocationBytes_;
+      return *this;
+    }
+
+    Budget & setUsage( VULKAN_HPP_NAMESPACE::DeviceSize usage_ )
+    {
+      usage = usage_;
+      return *this;
+    }
+
+    Budget & setBudget( VULKAN_HPP_NAMESPACE::DeviceSize budget_ )
+    {
+      budget = budget_;
+      return *this;
+    }    
+
+    operator VmaBudget const&() const
+    {
+      return *reinterpret_cast<const VmaBudget*>( this );
+    }
+
+    operator VmaBudget &()
+    {
+      return *reinterpret_cast<VmaBudget*>( this );
+    }
+
+    bool operator==( Budget const& rhs ) const
+    {
+      return ( blockBytes == rhs.blockBytes )
+          && ( allocationBytes == rhs.allocationBytes )
+          && ( usage == rhs.usage )
+          && ( budget == rhs.budget );
+    }
+
+    bool operator!=( Budget const& rhs ) const
+    {
+      return !operator==( rhs );
+    }
+  public:
+      VULKAN_HPP_NAMESPACE::DeviceSize blockBytes;
+      VULKAN_HPP_NAMESPACE::DeviceSize allocationBytes;
+      VULKAN_HPP_NAMESPACE::DeviceSize usage;
+      VULKAN_HPP_NAMESPACE::DeviceSize budget;
+  };
+  static_assert( sizeof( Budget ) == sizeof( VmaBudget ), "struct and wrapper have different size!" );
+  static_assert( std::is_standard_layout<Budget>::value, "struct wrapper is not a standard layout!" );
 
   VULKAN_HPP_INLINE VULKAN_HPP_NAMESPACE::Result createAllocator( const AllocatorCreateInfo* pCreateInfo, Allocator* pAllocator)
   {
@@ -2127,6 +2307,19 @@ namespace VMA_HPP_NAMESPACE {
 #endif /*VULKAN_HPP_DISABLE_ENHANCED_MODE*/
 
 #ifdef VULKAN_HPP_DISABLE_ENHANCED_MODE
+  VULKAN_HPP_INLINE VULKAN_HPP_NAMESPACE::Result Allocator::bindBufferMemory2( Allocation allocation, VULKAN_HPP_NAMESPACE::DeviceSize allocationLocalOffset, VULKAN_HPP_NAMESPACE::Buffer buffer, const void* pNext ) const
+  {
+    return static_cast<VULKAN_HPP_NAMESPACE::Result>( ::vmaBindBufferMemory2( m_allocator, static_cast<VmaAllocation>( allocation ), static_cast<VkDeviceSize>( allocationLocalOffset ), static_cast<VkBuffer>( buffer ), pNext ) );
+  }
+#else
+  VULKAN_HPP_INLINE VULKAN_HPP_NAMESPACE::ResultValueType<void>::type Allocator::bindBufferMemory2( Allocation allocation, VULKAN_HPP_NAMESPACE::DeviceSize allocationLocalOffset, VULKAN_HPP_NAMESPACE::Buffer buffer, const void* pNext ) const
+  {
+    VULKAN_HPP_NAMESPACE::Result result = static_cast<VULKAN_HPP_NAMESPACE::Result>( ::vmaBindBufferMemory2( m_allocator, static_cast<VmaAllocation>( allocation ), static_cast<VkDeviceSize>( allocationLocalOffset ), static_cast<VkBuffer>( buffer ), pNext ) );
+    return createResultValue( result, VMA_HPP_NAMESPACE_STRING"::Allocator::bindBufferMemory2" );
+  }
+#endif /*VULKAN_HPP_DISABLE_ENHANCED_MODE*/
+
+#ifdef VULKAN_HPP_DISABLE_ENHANCED_MODE
   VULKAN_HPP_INLINE VULKAN_HPP_NAMESPACE::Result Allocator::bindImageMemory( Allocation allocation, VULKAN_HPP_NAMESPACE::Image image ) const
   {
     return static_cast<VULKAN_HPP_NAMESPACE::Result>( ::vmaBindImageMemory( m_allocator, static_cast<VmaAllocation>( allocation ), static_cast<VkImage>( image ) ) );
@@ -2136,6 +2329,19 @@ namespace VMA_HPP_NAMESPACE {
   {
     VULKAN_HPP_NAMESPACE::Result result = static_cast<VULKAN_HPP_NAMESPACE::Result>( ::vmaBindImageMemory( m_allocator, static_cast<VmaAllocation>( allocation ), static_cast<VkImage>( image ) ) );
     return createResultValue( result, VMA_HPP_NAMESPACE_STRING"::Allocator::bindImageMemory" );
+  }
+#endif /*VULKAN_HPP_DISABLE_ENHANCED_MODE*/
+
+#ifdef VULKAN_HPP_DISABLE_ENHANCED_MODE
+  VULKAN_HPP_INLINE VULKAN_HPP_NAMESPACE::Result bindImageMemory2( Allocation allocation, VULKAN_HPP_NAMESPACE::DeviceSize allocationLocalOffset, VULKAN_HPP_NAMESPACE::Image image, const void* pNext ) const;
+  {
+    return static_cast<VULKAN_HPP_NAMESPACE::Result>( ::vmaBindImageMemory2( m_allocator, static_cast<VmaAllocation>( allocation ), static_cast<VkDeviceSize>( allocationLocalOffset ), static_cast<VkImage>( image ), pNext ) );
+  }
+#else
+  VULKAN_HPP_INLINE VULKAN_HPP_NAMESPACE::ResultValueType<void>::type Allocator::bindImageMemory2( Allocation allocation, VULKAN_HPP_NAMESPACE::DeviceSize allocationLocalOffset, VULKAN_HPP_NAMESPACE::Image image, const void* pNext ) const
+  {
+    VULKAN_HPP_NAMESPACE::Result result = static_cast<VULKAN_HPP_NAMESPACE::Result>( ::vmaBindImageMemory2( m_allocator, static_cast<VmaAllocation>( allocation ), static_cast<VkDeviceSize>( allocationLocalOffset ), static_cast<VkImage>( image ), pNext ) );
+    return createResultValue( result, VMA_HPP_NAMESPACE_STRING"::Allocator::bindImageMemory2" );
   }
 #endif /*VULKAN_HPP_DISABLE_ENHANCED_MODE*/
 
@@ -2149,6 +2355,19 @@ namespace VMA_HPP_NAMESPACE {
     Stats stats;
     ::vmaCalculateStats( m_allocator, reinterpret_cast<VmaStats*>( &stats ) );
     return stats;
+  }
+#endif /*VULKAN_HPP_DISABLE_ENHANCED_MODE*/
+
+  VULKAN_HPP_INLINE void Allocator::getBudget( Budget* pBudget ) const
+  {
+    ::vmaGetBudget( m_allocator, reinterpret_cast<VmaBudget*>( pBudget ) );
+  }
+#ifndef VULKAN_HPP_DISABLE_ENHANCED_MODE
+  VULKAN_HPP_INLINE Budget Allocator::getBudget() const
+  {
+    Budget budget;
+    ::vmaGetBudget( m_allocator, reinterpret_cast<VmaBudget*>( &budget ) );
+    return budget;
   }
 #endif /*VULKAN_HPP_DISABLE_ENHANCED_MODE*/
 
@@ -2178,6 +2397,32 @@ namespace VMA_HPP_NAMESPACE {
   }
 #endif /*VULKAN_HPP_DISABLE_ENHANCED_MODE*/
 
+#ifdef VULKAN_HPP_DISABLE_ENHANCED_MODE
+  VULKAN_HPP_INLINE void Allocator::getPoolName( Pool pool, const char** ppName ) const
+  {
+    ::vmaGetPoolName( m_allocator, static_cast<VmaPool>( pool ), ppName );
+  }
+#else
+  VULKAN_HPP_INLINE const char* Allocator::getPoolName( Pool pool ) const
+  {
+    const char* pName = nullptr;
+    ::vmaGetPoolName( m_allocator, static_cast<VmaPool>( pool ), &pName );
+    return pName;
+  }
+#endif /*VULKAN_HPP_DISABLE_ENHANCED_MODE*/
+
+#ifdef VULKAN_HPP_DISABLE_ENHANCED_MODE
+  VULKAN_HPP_INLINE void Allocator::setPoolName( Pool pool, const char* pName ) const
+  {
+    ::vmaSetPoolName( m_allocator, static_cast<VmaPool>( pool ), pName );
+  }
+#else
+  VULKAN_HPP_INLINE void Allocator::setPoolName( Pool pool, const char* pName ) const
+  {
+    ::vmaSetPoolName( m_allocator, static_cast<VmaPool>( pool ), pName );
+  }
+#endif /*VULKAN_HPP_DISABLE_ENHANCED_MODE*/
+
   VULKAN_HPP_INLINE VULKAN_HPP_NAMESPACE::Result Allocator::createBuffer( const VULKAN_HPP_NAMESPACE::BufferCreateInfo* pBufferCreateInfo, const AllocationCreateInfo* pAllocationCreateInfo, VULKAN_HPP_NAMESPACE::Buffer* pBuffer, Allocation* pAllocation, AllocationInfo* pAllocationInfo ) const
   {
     return static_cast<VULKAN_HPP_NAMESPACE::Result>( ::vmaCreateBuffer( m_allocator, reinterpret_cast<const VkBufferCreateInfo*>( pBufferCreateInfo ), reinterpret_cast<const VmaAllocationCreateInfo*>( pAllocationCreateInfo ), reinterpret_cast<VkBuffer*>( pBuffer ), reinterpret_cast<VmaAllocation*>( pAllocation ), reinterpret_cast<VmaAllocationInfo*>( pAllocationInfo ) ) );
@@ -2188,7 +2433,7 @@ namespace VMA_HPP_NAMESPACE {
     VULKAN_HPP_NAMESPACE::Buffer buffer;
     vma::Allocation allocation;
     VULKAN_HPP_NAMESPACE::Result result = static_cast<VULKAN_HPP_NAMESPACE::Result>( ::vmaCreateBuffer( m_allocator, reinterpret_cast<const VkBufferCreateInfo*>( &bufferCreateInfo ), reinterpret_cast<const VmaAllocationCreateInfo*>( &allocationCreateInfo ), reinterpret_cast<VkBuffer*>( &buffer ), reinterpret_cast<VmaAllocation*>( &allocation ), reinterpret_cast<VmaAllocationInfo*>( static_cast<AllocationInfo*>( allocationInfo ) ) ) );
-    const std::pair<VULKAN_HPP_NAMESPACE::Buffer, vma::Allocation> pair = std::make_pair( buffer, allocation );
+    std::pair<VULKAN_HPP_NAMESPACE::Buffer, vma::Allocation> pair = std::make_pair( buffer, allocation );
     return createResultValue( result, pair, VMA_HPP_NAMESPACE_STRING"::Allocator::createBuffer" );
   }
 #endif /*VULKAN_HPP_DISABLE_ENHANCED_MODE*/
@@ -2203,7 +2448,7 @@ namespace VMA_HPP_NAMESPACE {
     VULKAN_HPP_NAMESPACE::Image image;
     vma::Allocation allocation;
     VULKAN_HPP_NAMESPACE::Result result = static_cast<VULKAN_HPP_NAMESPACE::Result>( ::vmaCreateImage( m_allocator, reinterpret_cast<const VkImageCreateInfo*>( &imageCreateInfo ), reinterpret_cast<const VmaAllocationCreateInfo*>( &allocationCreateInfo ), reinterpret_cast<VkImage*>( &image ), reinterpret_cast<VmaAllocation*>( &allocation ), reinterpret_cast<VmaAllocationInfo*>( static_cast<AllocationInfo*>( allocationInfo ) ) ) );
-    const std::pair<VULKAN_HPP_NAMESPACE::Image, vma::Allocation> pair = std::make_pair( image, allocation );
+    std::pair<VULKAN_HPP_NAMESPACE::Image, vma::Allocation> pair = std::make_pair( image, allocation );
     return createResultValue( result, pair, VMA_HPP_NAMESPACE_STRING"::Allocator::createImage" );
   }
 #endif /*VULKAN_HPP_DISABLE_ENHANCED_MODE*/
@@ -2513,7 +2758,7 @@ namespace VULKAN_HPP_NAMESPACE {
   {
     enum
     {
-      allFlags = VkFlags(VMA_HPP_NAMESPACE::AllocationCreateFlagBits::eDedicatedMemory) | VkFlags(VMA_HPP_NAMESPACE::AllocationCreateFlagBits::eNeverAllocate) | VkFlags(VMA_HPP_NAMESPACE::AllocationCreateFlagBits::eMapped) | VkFlags(VMA_HPP_NAMESPACE::AllocationCreateFlagBits::eCanBecomeLost) | VkFlags(VMA_HPP_NAMESPACE::AllocationCreateFlagBits::eCanMakeOtherLost) | VkFlags(VMA_HPP_NAMESPACE::AllocationCreateFlagBits::eUserDataCopyString) | VkFlags(VMA_HPP_NAMESPACE::AllocationCreateFlagBits::eUpperAddress) | VkFlags(VMA_HPP_NAMESPACE::AllocationCreateFlagBits::eStrategyBestFit) | VkFlags(VMA_HPP_NAMESPACE::AllocationCreateFlagBits::eStrategyWorstFit) | VkFlags(VMA_HPP_NAMESPACE::AllocationCreateFlagBits::eStrategyFirstFit) | VkFlags(VMA_HPP_NAMESPACE::AllocationCreateFlagBits::eStrategyMinMemory) | VkFlags(VMA_HPP_NAMESPACE::AllocationCreateFlagBits::eStrategyMinTime) | VkFlags(VMA_HPP_NAMESPACE::AllocationCreateFlagBits::eStrategyMinFragmentation) | VkFlags(VMA_HPP_NAMESPACE::AllocationCreateFlagBits::eStrategyMask)
+      allFlags = VkFlags(VMA_HPP_NAMESPACE::AllocationCreateFlagBits::eDedicatedMemory) | VkFlags(VMA_HPP_NAMESPACE::AllocationCreateFlagBits::eNeverAllocate) | VkFlags(VMA_HPP_NAMESPACE::AllocationCreateFlagBits::eMapped) | VkFlags(VMA_HPP_NAMESPACE::AllocationCreateFlagBits::eCanBecomeLost) | VkFlags(VMA_HPP_NAMESPACE::AllocationCreateFlagBits::eCanMakeOtherLost) | VkFlags(VMA_HPP_NAMESPACE::AllocationCreateFlagBits::eUserDataCopyString) | VkFlags(VMA_HPP_NAMESPACE::AllocationCreateFlagBits::eUpperAddress) | VkFlags(VMA_HPP_NAMESPACE::AllocationCreateFlagBits::eDontBind)  | VkFlags(VMA_HPP_NAMESPACE::AllocationCreateFlagBits::eWithinBudget)  | VkFlags(VMA_HPP_NAMESPACE::AllocationCreateFlagBits::eStrategyBestFit) | VkFlags(VMA_HPP_NAMESPACE::AllocationCreateFlagBits::eStrategyWorstFit) | VkFlags(VMA_HPP_NAMESPACE::AllocationCreateFlagBits::eStrategyFirstFit) | VkFlags(VMA_HPP_NAMESPACE::AllocationCreateFlagBits::eStrategyMinMemory) | VkFlags(VMA_HPP_NAMESPACE::AllocationCreateFlagBits::eStrategyMinTime) | VkFlags(VMA_HPP_NAMESPACE::AllocationCreateFlagBits::eStrategyMinFragmentation) | VkFlags(VMA_HPP_NAMESPACE::AllocationCreateFlagBits::eStrategyMask)
     };
   };
 
@@ -2521,7 +2766,7 @@ namespace VULKAN_HPP_NAMESPACE {
   {
     enum
     {
-      allFlags = VkFlags(VMA_HPP_NAMESPACE::AllocatorCreateFlagBits::eExternallySynchronized) | VkFlags(VMA_HPP_NAMESPACE::AllocatorCreateFlagBits::eKhrDedicatedAllocation)
+      allFlags = VkFlags(VMA_HPP_NAMESPACE::AllocatorCreateFlagBits::eExternallySynchronized) | VkFlags(VMA_HPP_NAMESPACE::AllocatorCreateFlagBits::eKhrDedicatedAllocation) | VkFlags(VMA_HPP_NAMESPACE::AllocatorCreateFlagBits::eKhrBindMemory2) | VkFlags(VMA_HPP_NAMESPACE::AllocatorCreateFlagBits::eExtMemoryBudget )
     };
   };
 
