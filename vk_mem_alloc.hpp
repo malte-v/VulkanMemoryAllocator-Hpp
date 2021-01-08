@@ -725,6 +725,7 @@ namespace VMA_HPP_NAMESPACE {
 
   struct AllocationCreateInfo
   {
+#if !defined( VMA_HPP_NO_STRUCT_CONSTRUCTORS )
     AllocationCreateInfo( AllocationCreateFlags flags_ = AllocationCreateFlags(),
                                   MemoryUsage usage_ = MemoryUsage::eUnknown,
                                   VULKAN_HPP_NAMESPACE::MemoryPropertyFlags requiredFlags_ = VULKAN_HPP_NAMESPACE::MemoryPropertyFlags(),
@@ -740,6 +741,7 @@ namespace VMA_HPP_NAMESPACE {
       , pool( pool_ )
       , pUserData( pUserData_ )
     {}
+#endif
 
     AllocationCreateInfo( VmaAllocationCreateInfo const & rhs )
     {
@@ -821,19 +823,20 @@ namespace VMA_HPP_NAMESPACE {
     }
 
   public:
-    AllocationCreateFlags flags;
-    MemoryUsage usage;
-    VULKAN_HPP_NAMESPACE::MemoryPropertyFlags requiredFlags;
-    VULKAN_HPP_NAMESPACE::MemoryPropertyFlags preferredFlags;
-    uint32_t memoryTypeBits;
-    Pool pool;
-    void* pUserData;
+    AllocationCreateFlags flags = AllocationCreateFlags();
+    MemoryUsage usage = MemoryUsage::eUnknown;
+    VULKAN_HPP_NAMESPACE::MemoryPropertyFlags requiredFlags = VULKAN_HPP_NAMESPACE::MemoryPropertyFlags();
+    VULKAN_HPP_NAMESPACE::MemoryPropertyFlags preferredFlags = VULKAN_HPP_NAMESPACE::MemoryPropertyFlags();
+    uint32_t memoryTypeBits = 0;
+    Pool pool = Pool();
+    void* pUserData = nullptr;
   };
   static_assert( sizeof( AllocationCreateInfo ) == sizeof( VmaAllocationCreateInfo ), "struct and wrapper have different size!" );
   static_assert( std::is_standard_layout<AllocationCreateInfo>::value, "struct wrapper is not a standard layout!" );
 
   struct AllocationInfo
   {
+#if !defined( VMA_HPP_NO_STRUCT_CONSTRUCTORS )
     AllocationInfo( uint32_t memoryType_ = 0,
                             VULKAN_HPP_NAMESPACE::DeviceMemory deviceMemory_ = VULKAN_HPP_NAMESPACE::DeviceMemory(),
                             VULKAN_HPP_NAMESPACE::DeviceSize offset_ = 0,
@@ -847,6 +850,7 @@ namespace VMA_HPP_NAMESPACE {
       , pMappedData( pMappedData_ )
       , pUserData( pUserData_ )
     {}
+#endif
 
     AllocationInfo( VmaAllocationInfo const & rhs )
     {
@@ -922,22 +926,24 @@ namespace VMA_HPP_NAMESPACE {
 
   public:
     uint32_t memoryType;
-    VULKAN_HPP_NAMESPACE::DeviceMemory deviceMemory;
-    VULKAN_HPP_NAMESPACE::DeviceSize offset;
-    VULKAN_HPP_NAMESPACE::DeviceSize size;
-    void* pMappedData;
-    void* pUserData;
+    VULKAN_HPP_NAMESPACE::DeviceMemory deviceMemory = VULKAN_HPP_NAMESPACE::DeviceMemory();
+    VULKAN_HPP_NAMESPACE::DeviceSize offset = 0;
+    VULKAN_HPP_NAMESPACE::DeviceSize size = 0;
+    void* pMappedData = nullptr;
+    void* pUserData = nullptr;
   };
   static_assert( sizeof( AllocationInfo ) == sizeof( VmaAllocationInfo ), "struct and wrapper have different size!" );
   static_assert( std::is_standard_layout<AllocationInfo>::value, "struct wrapper is not a standard layout!" );
 
   struct DeviceMemoryCallbacks
   {
+#if !defined( VMA_HPP_NO_STRUCT_CONSTRUCTORS )
     DeviceMemoryCallbacks( PFN_vmaAllocateDeviceMemoryFunction pfnAllocate_ = nullptr,
                                    PFN_vmaFreeDeviceMemoryFunction pfnFree_ = nullptr )
       : pfnAllocate( pfnAllocate_ )
       , pfnFree( pfnFree_ )
     {}
+#endif
 
     DeviceMemoryCallbacks( VmaDeviceMemoryCallbacks const & rhs )
     {
@@ -984,14 +990,15 @@ namespace VMA_HPP_NAMESPACE {
     }
 
   public:
-    PFN_vmaAllocateDeviceMemoryFunction pfnAllocate;
-    PFN_vmaFreeDeviceMemoryFunction pfnFree;
+    PFN_vmaAllocateDeviceMemoryFunction pfnAllocate = nullptr;
+    PFN_vmaFreeDeviceMemoryFunction pfnFree = nullptr;
   };
   static_assert( sizeof( DeviceMemoryCallbacks ) == sizeof( VmaDeviceMemoryCallbacks ), "struct and wrapper have different size!" );
   static_assert( std::is_standard_layout<DeviceMemoryCallbacks>::value, "struct wrapper is not a standard layout!" );
 
   struct VulkanFunctions
   {
+#if !defined( VMA_HPP_NO_STRUCT_CONSTRUCTORS )
     VulkanFunctions( PFN_vkGetPhysicalDeviceProperties vkGetPhysicalDeviceProperties_ = nullptr,
                              PFN_vkGetPhysicalDeviceMemoryProperties vkGetPhysicalDeviceMemoryProperties_ = nullptr,
                              PFN_vkAllocateMemory vkAllocateMemory_ = nullptr,
@@ -1009,17 +1016,17 @@ namespace VMA_HPP_NAMESPACE {
                              PFN_vkCreateImage vkCreateImage_ = nullptr,
                              PFN_vkDestroyImage vkDestroyImage_ = nullptr,
                              PFN_vkCmdCopyBuffer vkCmdCopyBuffer_ = nullptr
-#if VMA_DEDICATED_ALLOCATION || VMA_VULKAN_VERSION >= 1001000
+# if VMA_DEDICATED_ALLOCATION || VMA_VULKAN_VERSION >= 1001000
                            , PFN_vkGetBufferMemoryRequirements2KHR vkGetBufferMemoryRequirements2KHR_ = nullptr,
                              PFN_vkGetImageMemoryRequirements2KHR vkGetImageMemoryRequirements2KHR_ = nullptr
-#endif
-#if VMA_BIND_MEMORY2 || VMA_VULKAN_VERSION >= 1001000
+# endif
+# if VMA_BIND_MEMORY2 || VMA_VULKAN_VERSION >= 1001000
                            , PFN_vkBindBufferMemory2KHR vkBindBufferMemory2KHR_ = nullptr,
                              PFN_vkBindImageMemory2KHR vkBindImageMemory2KHR_ = nullptr
-#endif
-#if VMA_MEMORY_BUDGET || VMA_VULKAN_VERSION >= 1001000
+# endif
+# if VMA_MEMORY_BUDGET || VMA_VULKAN_VERSION >= 1001000
                            , PFN_vkGetPhysicalDeviceMemoryProperties2KHR vkGetPhysicalDeviceMemoryProperties2KHR_ = nullptr
-#endif
+# endif
                              ) 
       : vkGetPhysicalDeviceProperties( vkGetPhysicalDeviceProperties_ )
       , vkGetPhysicalDeviceMemoryProperties( vkGetPhysicalDeviceMemoryProperties_ )
@@ -1038,18 +1045,19 @@ namespace VMA_HPP_NAMESPACE {
       , vkCreateImage( vkCreateImage_ )
       , vkDestroyImage( vkDestroyImage_ )
       , vkCmdCopyBuffer( vkCmdCopyBuffer_ )
-#if VMA_DEDICATED_ALLOCATION || VMA_VULKAN_VERSION >= 1001000
+# if VMA_DEDICATED_ALLOCATION || VMA_VULKAN_VERSION >= 1001000
       , vkGetBufferMemoryRequirements2KHR(vkGetBufferMemoryRequirements2KHR_)
       , vkGetImageMemoryRequirements2KHR(vkGetImageMemoryRequirements2KHR_)
-#endif
-#if VMA_BIND_MEMORY2 || VMA_VULKAN_VERSION >= 1001000
+# endif
+# if VMA_BIND_MEMORY2 || VMA_VULKAN_VERSION >= 1001000
       , vkBindBufferMemory2KHR(vkBindBufferMemory2KHR_)
       , vkBindImageMemory2KHR(vkBindImageMemory2KHR_)
-#endif
-#if VMA_MEMORY_BUDGET || VMA_VULKAN_VERSION >= 1001000
+# endif
+# if VMA_MEMORY_BUDGET || VMA_VULKAN_VERSION >= 1001000
       , vkGetPhysicalDeviceMemoryProperties2KHR(vkGetPhysicalDeviceMemoryProperties2KHR_)
-#endif
+# endif
     {}
+#endif
 
     VulkanFunctions( VmaVulkanFunctions const & rhs )
     {
@@ -1247,33 +1255,33 @@ namespace VMA_HPP_NAMESPACE {
     }
 
   public:
-    PFN_vkGetPhysicalDeviceProperties vkGetPhysicalDeviceProperties;
-    PFN_vkGetPhysicalDeviceMemoryProperties vkGetPhysicalDeviceMemoryProperties;
-    PFN_vkAllocateMemory vkAllocateMemory;
-    PFN_vkFreeMemory vkFreeMemory;
-    PFN_vkMapMemory vkMapMemory;
-    PFN_vkUnmapMemory vkUnmapMemory;
-    PFN_vkFlushMappedMemoryRanges vkFlushMappedMemoryRanges;
-    PFN_vkInvalidateMappedMemoryRanges vkInvalidateMappedMemoryRanges;
-    PFN_vkBindBufferMemory vkBindBufferMemory;
-    PFN_vkBindImageMemory vkBindImageMemory;
-    PFN_vkGetBufferMemoryRequirements vkGetBufferMemoryRequirements;
-    PFN_vkGetImageMemoryRequirements vkGetImageMemoryRequirements;
-    PFN_vkCreateBuffer vkCreateBuffer;
-    PFN_vkDestroyBuffer vkDestroyBuffer;
-    PFN_vkCreateImage vkCreateImage;
-    PFN_vkDestroyImage vkDestroyImage;
-    PFN_vkCmdCopyBuffer vkCmdCopyBuffer;
+    PFN_vkGetPhysicalDeviceProperties vkGetPhysicalDeviceProperties = nullptr;
+    PFN_vkGetPhysicalDeviceMemoryProperties vkGetPhysicalDeviceMemoryProperties = nullptr;
+    PFN_vkAllocateMemory vkAllocateMemory = nullptr;
+    PFN_vkFreeMemory vkFreeMemory = nullptr;
+    PFN_vkMapMemory vkMapMemory = nullptr;
+    PFN_vkUnmapMemory vkUnmapMemory = nullptr;
+    PFN_vkFlushMappedMemoryRanges vkFlushMappedMemoryRanges = nullptr;
+    PFN_vkInvalidateMappedMemoryRanges vkInvalidateMappedMemoryRanges = nullptr;
+    PFN_vkBindBufferMemory vkBindBufferMemory = nullptr;
+    PFN_vkBindImageMemory vkBindImageMemory = nullptr;
+    PFN_vkGetBufferMemoryRequirements vkGetBufferMemoryRequirements = nullptr;
+    PFN_vkGetImageMemoryRequirements vkGetImageMemoryRequirements = nullptr;
+    PFN_vkCreateBuffer vkCreateBuffer = nullptr;
+    PFN_vkDestroyBuffer vkDestroyBuffer = nullptr;
+    PFN_vkCreateImage vkCreateImage = nullptr;
+    PFN_vkDestroyImage vkDestroyImage = nullptr;
+    PFN_vkCmdCopyBuffer vkCmdCopyBuffer = nullptr;
 #if VMA_DEDICATED_ALLOCATION || VMA_VULKAN_VERSION >= 1001000
-    PFN_vkGetBufferMemoryRequirements2KHR vkGetBufferMemoryRequirements2KHR;
-    PFN_vkGetImageMemoryRequirements2KHR vkGetImageMemoryRequirements2KHR;
+    PFN_vkGetBufferMemoryRequirements2KHR vkGetBufferMemoryRequirements2KHR = nullptr;
+    PFN_vkGetImageMemoryRequirements2KHR vkGetImageMemoryRequirements2KHR = nullptr;
 #endif
 #if VMA_BIND_MEMORY2 || VMA_VULKAN_VERSION >= 1001000
-    PFN_vkBindBufferMemory2KHR vkBindBufferMemory2KHR;
-    PFN_vkBindImageMemory2KHR vkBindImageMemory2KHR;
+    PFN_vkBindBufferMemory2KHR vkBindBufferMemory2KHR = nullptr;
+    PFN_vkBindImageMemory2KHR vkBindImageMemory2KHR = nullptr;
 #endif
 #if VMA_MEMORY_BUDGET || VMA_VULKAN_VERSION >= 1001000
-    PFN_vkGetPhysicalDeviceMemoryProperties2KHR vkGetPhysicalDeviceMemoryProperties2KHR;
+    PFN_vkGetPhysicalDeviceMemoryProperties2KHR vkGetPhysicalDeviceMemoryProperties2KHR = nullptr;
 #endif
   };
   static_assert( sizeof( VulkanFunctions ) == sizeof( VmaVulkanFunctions ), "struct and wrapper have different size!" );
@@ -1281,11 +1289,13 @@ namespace VMA_HPP_NAMESPACE {
 
   struct RecordSettings
   {
+#if !defined( VMA_HPP_NO_STRUCT_CONSTRUCTORS )
     RecordSettings( RecordFlags flags_ = RecordFlags(),
                             const char* pFilePath_ = nullptr )
       : flags( flags_ )
       , pFilePath( pFilePath_ )
     {}
+#endif
 
     RecordSettings( VmaRecordSettings const & rhs )
     {
@@ -1332,8 +1342,8 @@ namespace VMA_HPP_NAMESPACE {
     }
 
   public:
-    RecordFlags flags;
-    const char* pFilePath;
+    RecordFlags flags = RecordFlags();
+    const char* pFilePath = nullptr;
   };
   static_assert( sizeof( RecordSettings ) == sizeof( VmaRecordSettings ), "struct and wrapper have different size!" );
   static_assert( std::is_standard_layout<RecordSettings>::value, "struct wrapper is not a standard layout!" );
@@ -1499,6 +1509,7 @@ namespace VMA_HPP_NAMESPACE {
 
   struct DefragmentationInfo2
   {
+#if !defined( VMA_HPP_NO_STRUCT_CONSTRUCTORS )
     DefragmentationInfo2( DefragmentationFlags flags_ = DefragmentationFlags(),
                                   uint32_t allocationCount_ = 0,
                                   Allocation* pAllocations_ = nullptr,
@@ -1522,6 +1533,7 @@ namespace VMA_HPP_NAMESPACE {
       , maxGpuAllocationsToMove( maxGpuAllocationsToMove_ )
       , commandBuffer( commandBuffer_ )
     {}
+#endif
 
     DefragmentationInfo2( VmaDefragmentationInfo2 const & rhs )
     {
@@ -1631,17 +1643,17 @@ namespace VMA_HPP_NAMESPACE {
     }
 
   public:
-    DefragmentationFlags flags;
-    uint32_t allocationCount;
-    Allocation* pAllocations;
-    VULKAN_HPP_NAMESPACE::Bool32* pAllocationsChanged;
-    uint32_t poolCount;
-    Pool* pPools;
-    VULKAN_HPP_NAMESPACE::DeviceSize maxCpuBytesToMove;
-    uint32_t maxCpuAllocationsToMove;
-    VULKAN_HPP_NAMESPACE::DeviceSize maxGpuBytesToMove;
-    uint32_t maxGpuAllocationsToMove;
-    VULKAN_HPP_NAMESPACE::CommandBuffer commandBuffer;
+    DefragmentationFlags flags = DefragmentationFlags();
+    uint32_t allocationCount = 0;
+    Allocation* pAllocations = nullptr;
+    VULKAN_HPP_NAMESPACE::Bool32* pAllocationsChanged = nullptr;
+    uint32_t poolCount = 0;
+    Pool* pPools = nullptr;
+    VULKAN_HPP_NAMESPACE::DeviceSize maxCpuBytesToMove = 0;
+    uint32_t maxCpuAllocationsToMove = 0;
+    VULKAN_HPP_NAMESPACE::DeviceSize maxGpuBytesToMove = 0;
+    uint32_t maxGpuAllocationsToMove = 0;
+    VULKAN_HPP_NAMESPACE::CommandBuffer commandBuffer = VULKAN_HPP_NAMESPACE::CommandBuffer();
   };
   static_assert( sizeof( DefragmentationInfo2 ) == sizeof( VmaDefragmentationInfo2 ), "struct and wrapper have different size!" );
   static_assert( std::is_standard_layout<DefragmentationInfo2>::value, "struct wrapper is not a standard layout!" );
@@ -1727,6 +1739,7 @@ namespace VMA_HPP_NAMESPACE {
 
   struct PoolCreateInfo
   {
+#if !defined( VMA_HPP_NO_STRUCT_CONSTRUCTORS )
     PoolCreateInfo( uint32_t memoryTypeIndex_ = 0,
                             PoolCreateFlags flags_ = PoolCreateFlags(),
                             VULKAN_HPP_NAMESPACE::DeviceSize blockSize_ = 0,
@@ -1740,6 +1753,7 @@ namespace VMA_HPP_NAMESPACE {
       , maxBlockCount( maxBlockCount_ )
       , frameInUseCount( frameInUseCount_ )
     {}
+#endif
 
     PoolCreateInfo( VmaPoolCreateInfo const & rhs )
     {
@@ -1814,12 +1828,12 @@ namespace VMA_HPP_NAMESPACE {
     }
 
   public:
-    uint32_t memoryTypeIndex;
-    PoolCreateFlags flags;
-    VULKAN_HPP_NAMESPACE::DeviceSize blockSize;
-    size_t minBlockCount;
-    size_t maxBlockCount;
-    uint32_t frameInUseCount;
+    uint32_t memoryTypeIndex = 0;
+    PoolCreateFlags flags = PoolCreateFlags();
+    VULKAN_HPP_NAMESPACE::DeviceSize blockSize = 0;
+    size_t minBlockCount = 0;
+    size_t maxBlockCount = 0;
+    uint32_t frameInUseCount = 0;
   };
   static_assert( sizeof( PoolCreateInfo ) == sizeof( VmaPoolCreateInfo ), "struct and wrapper have different size!" );
   static_assert( std::is_standard_layout<PoolCreateInfo>::value, "struct wrapper is not a standard layout!" );
@@ -1925,6 +1939,7 @@ namespace VMA_HPP_NAMESPACE {
 
   struct StatInfo
   {
+#if !defined( VMA_HPP_NO_STRUCT_CONSTRUCTORS )
     StatInfo( uint32_t blockCount_ = 0,
                       uint32_t allocationCount_ = 0,
                       uint32_t unusedRangeCount_ = 0,
@@ -1948,6 +1963,7 @@ namespace VMA_HPP_NAMESPACE {
       , unusedRangeSizeAvg( unusedRangeSizeAvg_ )
       , unusedRangeSizeMax( unusedRangeSizeMax_ )
     {}
+#endif
 
     StatInfo( VmaStatInfo const & rhs )
     {
@@ -2057,23 +2073,24 @@ namespace VMA_HPP_NAMESPACE {
     }
 
   public:
-    uint32_t blockCount;
-    uint32_t allocationCount;
-    uint32_t unusedRangeCount;
-    VULKAN_HPP_NAMESPACE::DeviceSize usedBytes;
-    VULKAN_HPP_NAMESPACE::DeviceSize unusedBytes;
-    VULKAN_HPP_NAMESPACE::DeviceSize allocationSizeMin;
-    VULKAN_HPP_NAMESPACE::DeviceSize allocationSizeAvg;
-    VULKAN_HPP_NAMESPACE::DeviceSize allocationSizeMax;
-    VULKAN_HPP_NAMESPACE::DeviceSize unusedRangeSizeMin;
-    VULKAN_HPP_NAMESPACE::DeviceSize unusedRangeSizeAvg;
-    VULKAN_HPP_NAMESPACE::DeviceSize unusedRangeSizeMax;
+    uint32_t blockCount = 0;
+    uint32_t allocationCount = 0;
+    uint32_t unusedRangeCount = 0;
+    VULKAN_HPP_NAMESPACE::DeviceSize usedBytes = 0;
+    VULKAN_HPP_NAMESPACE::DeviceSize unusedBytes = 0;
+    VULKAN_HPP_NAMESPACE::DeviceSize allocationSizeMin = 0;
+    VULKAN_HPP_NAMESPACE::DeviceSize allocationSizeAvg = 0;
+    VULKAN_HPP_NAMESPACE::DeviceSize allocationSizeMax = 0;
+    VULKAN_HPP_NAMESPACE::DeviceSize unusedRangeSizeMin = 0;
+    VULKAN_HPP_NAMESPACE::DeviceSize unusedRangeSizeAvg = 0;
+    VULKAN_HPP_NAMESPACE::DeviceSize unusedRangeSizeMax = 0;
   };
   static_assert( sizeof( StatInfo ) == sizeof( VmaStatInfo ), "struct and wrapper have different size!" );
   static_assert( std::is_standard_layout<StatInfo>::value, "struct wrapper is not a standard layout!" );
 
   struct Stats
   {
+#if !defined( VMA_HPP_NO_STRUCT_CONSTRUCTORS )
     Stats( StatInfo memoryType_[VK_MAX_MEMORY_TYPES] = {},
                    StatInfo memoryHeap_[VK_MAX_MEMORY_HEAPS] = {},
                    StatInfo total_ = StatInfo() )
@@ -2082,6 +2099,7 @@ namespace VMA_HPP_NAMESPACE {
       memcpy(memoryType, memoryType_, VK_MAX_MEMORY_TYPES);
       memcpy(memoryHeap, memoryHeap_, VK_MAX_MEMORY_HEAPS);
     }
+#endif
 
     Stats( VmaStats const & rhs )
     {
@@ -2135,15 +2153,16 @@ namespace VMA_HPP_NAMESPACE {
     }
 
   public:
-    StatInfo memoryType[VK_MAX_MEMORY_TYPES];
-    StatInfo memoryHeap[VK_MAX_MEMORY_HEAPS];
-    StatInfo total;
+    StatInfo memoryType[VK_MAX_MEMORY_TYPES] = {};
+    StatInfo memoryHeap[VK_MAX_MEMORY_HEAPS] = {};
+    StatInfo total = StatInfo();
   };
   static_assert( sizeof( Stats ) == sizeof( VmaStats ), "struct and wrapper have different size!" );
   static_assert( std::is_standard_layout<Stats>::value, "struct wrapper is not a standard layout!" );
   
   struct Budget
   {
+#if !defined( VMA_HPP_NO_STRUCT_CONSTRUCTORS )
     Budget( VULKAN_HPP_NAMESPACE::DeviceSize blockBytes_ = {},
             VULKAN_HPP_NAMESPACE::DeviceSize allocationBytes_ = {},
             VULKAN_HPP_NAMESPACE::DeviceSize usage_ = {},
@@ -2153,6 +2172,7 @@ namespace VMA_HPP_NAMESPACE {
       , usage( usage_ )
       , budget( budget_ )
     {}
+#endif
 
     Budget( VmaBudget const & rhs )
     {
@@ -2212,10 +2232,10 @@ namespace VMA_HPP_NAMESPACE {
       return !operator==( rhs );
     }
   public:
-      VULKAN_HPP_NAMESPACE::DeviceSize blockBytes;
-      VULKAN_HPP_NAMESPACE::DeviceSize allocationBytes;
-      VULKAN_HPP_NAMESPACE::DeviceSize usage;
-      VULKAN_HPP_NAMESPACE::DeviceSize budget;
+      VULKAN_HPP_NAMESPACE::DeviceSize blockBytes = {};
+      VULKAN_HPP_NAMESPACE::DeviceSize allocationBytes = {};
+      VULKAN_HPP_NAMESPACE::DeviceSize usage = {};
+      VULKAN_HPP_NAMESPACE::DeviceSize budget = {};
   };
   static_assert( sizeof( Budget ) == sizeof( VmaBudget ), "struct and wrapper have different size!" );
   static_assert( std::is_standard_layout<Budget>::value, "struct wrapper is not a standard layout!" );
