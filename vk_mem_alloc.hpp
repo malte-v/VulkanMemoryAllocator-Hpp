@@ -741,12 +741,12 @@ namespace VMA_HPP_NAMESPACE {
       , pool( pool_ )
       , pUserData( pUserData_ )
     {}
-#endif
 
     AllocationCreateInfo( VmaAllocationCreateInfo const & rhs )
     {
       *reinterpret_cast<VmaAllocationCreateInfo*>(this) = rhs;
     }
+#endif
 
     AllocationCreateInfo& operator=( VmaAllocationCreateInfo const & rhs )
     {
@@ -850,12 +850,12 @@ namespace VMA_HPP_NAMESPACE {
       , pMappedData( pMappedData_ )
       , pUserData( pUserData_ )
     {}
-#endif
 
     AllocationInfo( VmaAllocationInfo const & rhs )
     {
       *reinterpret_cast<VmaAllocationInfo*>(this) = rhs;
     }
+#endif
 
     AllocationInfo& operator=( VmaAllocationInfo const & rhs )
     {
@@ -943,12 +943,12 @@ namespace VMA_HPP_NAMESPACE {
       : pfnAllocate( pfnAllocate_ )
       , pfnFree( pfnFree_ )
     {}
-#endif
 
     DeviceMemoryCallbacks( VmaDeviceMemoryCallbacks const & rhs )
     {
       *reinterpret_cast<VmaDeviceMemoryCallbacks*>(this) = rhs;
     }
+#endif
 
     DeviceMemoryCallbacks& operator=( VmaDeviceMemoryCallbacks const & rhs )
     {
@@ -1057,12 +1057,12 @@ namespace VMA_HPP_NAMESPACE {
       , vkGetPhysicalDeviceMemoryProperties2KHR(vkGetPhysicalDeviceMemoryProperties2KHR_)
 # endif
     {}
-#endif
 
     VulkanFunctions( VmaVulkanFunctions const & rhs )
     {
       *reinterpret_cast<VmaVulkanFunctions*>(this) = rhs;
     }
+#endif
 
     VulkanFunctions& operator=( VmaVulkanFunctions const & rhs )
     {
@@ -1295,12 +1295,12 @@ namespace VMA_HPP_NAMESPACE {
       : flags( flags_ )
       , pFilePath( pFilePath_ )
     {}
-#endif
 
     RecordSettings( VmaRecordSettings const & rhs )
     {
       *reinterpret_cast<VmaRecordSettings*>(this) = rhs;
     }
+#endif
 
     RecordSettings& operator=( VmaRecordSettings const & rhs )
     {
@@ -1533,12 +1533,12 @@ namespace VMA_HPP_NAMESPACE {
       , maxGpuAllocationsToMove( maxGpuAllocationsToMove_ )
       , commandBuffer( commandBuffer_ )
     {}
-#endif
 
     DefragmentationInfo2( VmaDefragmentationInfo2 const & rhs )
     {
       *reinterpret_cast<VmaDefragmentationInfo2*>(this) = rhs;
     }
+#endif
 
     DefragmentationInfo2& operator=( VmaDefragmentationInfo2 const & rhs )
     {
@@ -1660,6 +1660,7 @@ namespace VMA_HPP_NAMESPACE {
 
   struct DefragmentationStats
   {
+#if !defined( VMA_HPP_NO_STRUCT_CONSTRUCTORS )
     DefragmentationStats( VULKAN_HPP_NAMESPACE::DeviceSize bytesMoved_ = 0,
                                   VULKAN_HPP_NAMESPACE::DeviceSize bytesFreed_ = 0,
                                   uint32_t allocationsMoved_ = 0,
@@ -1674,6 +1675,7 @@ namespace VMA_HPP_NAMESPACE {
     {
       *reinterpret_cast<VmaDefragmentationStats*>(this) = rhs;
     }
+#endif
 
     DefragmentationStats& operator=( VmaDefragmentationStats const & rhs )
     {
@@ -1729,10 +1731,10 @@ namespace VMA_HPP_NAMESPACE {
     }
 
   public:
-    VULKAN_HPP_NAMESPACE::DeviceSize bytesMoved;
-    VULKAN_HPP_NAMESPACE::DeviceSize bytesFreed;
-    uint32_t allocationsMoved;
-    uint32_t deviceMemoryBlocksFreed;
+    VULKAN_HPP_NAMESPACE::DeviceSize bytesMoved = 0;
+    VULKAN_HPP_NAMESPACE::DeviceSize bytesFreed = 0;
+    uint32_t allocationsMoved = 0;
+    uint32_t deviceMemoryBlocksFreed = 0;
   };
   static_assert( sizeof( DefragmentationStats ) == sizeof( VmaDefragmentationStats ), "struct and wrapper have different size!" );
   static_assert( std::is_standard_layout<DefragmentationStats>::value, "struct wrapper is not a standard layout!" );
@@ -1753,12 +1755,12 @@ namespace VMA_HPP_NAMESPACE {
       , maxBlockCount( maxBlockCount_ )
       , frameInUseCount( frameInUseCount_ )
     {}
-#endif
 
     PoolCreateInfo( VmaPoolCreateInfo const & rhs )
     {
       *reinterpret_cast<VmaPoolCreateInfo*>(this) = rhs;
     }
+#endif
 
     PoolCreateInfo& operator=( VmaPoolCreateInfo const & rhs )
     {
@@ -1840,6 +1842,7 @@ namespace VMA_HPP_NAMESPACE {
 
   struct PoolStats
   {
+#if !defined( VMA_HPP_NO_STRUCT_CONSTRUCTORS )
     PoolStats( VULKAN_HPP_NAMESPACE::DeviceSize size_ = 0,
                        VULKAN_HPP_NAMESPACE::DeviceSize unusedSize_ = 0,
                        size_t allocationCount_ = 0,
@@ -1858,6 +1861,7 @@ namespace VMA_HPP_NAMESPACE {
     {
       *reinterpret_cast<VmaPoolStats*>(this) = rhs;
     }
+#endif
 
     PoolStats& operator=( VmaPoolStats const & rhs )
     {
@@ -1927,12 +1931,12 @@ namespace VMA_HPP_NAMESPACE {
     }
 
   public:
-    VULKAN_HPP_NAMESPACE::DeviceSize size;
-    VULKAN_HPP_NAMESPACE::DeviceSize unusedSize;
-    size_t allocationCount;
-    size_t unusedRangeCount;
-    VULKAN_HPP_NAMESPACE::DeviceSize unusedRangeSizeMax;
-    size_t blockCount;
+    VULKAN_HPP_NAMESPACE::DeviceSize size = 0;
+    VULKAN_HPP_NAMESPACE::DeviceSize unusedSize = 0;
+    size_t allocationCount = 0;
+    size_t unusedRangeCount = 0;
+    VULKAN_HPP_NAMESPACE::DeviceSize unusedRangeSizeMax = 0;
+    size_t blockCount = 0;
   };
   static_assert( sizeof( PoolStats ) == sizeof( VmaPoolStats ), "struct and wrapper have different size!" );
   static_assert( std::is_standard_layout<PoolStats>::value, "struct wrapper is not a standard layout!" );
@@ -1963,12 +1967,12 @@ namespace VMA_HPP_NAMESPACE {
       , unusedRangeSizeAvg( unusedRangeSizeAvg_ )
       , unusedRangeSizeMax( unusedRangeSizeMax_ )
     {}
-#endif
 
     StatInfo( VmaStatInfo const & rhs )
     {
       *reinterpret_cast<VmaStatInfo*>(this) = rhs;
     }
+#endif
 
     StatInfo& operator=( VmaStatInfo const & rhs )
     {
@@ -2093,18 +2097,18 @@ namespace VMA_HPP_NAMESPACE {
 #if !defined( VMA_HPP_NO_STRUCT_CONSTRUCTORS )
     Stats( StatInfo memoryType_[VK_MAX_MEMORY_TYPES] = {},
                    StatInfo memoryHeap_[VK_MAX_MEMORY_HEAPS] = {},
-                   StatInfo total_ = StatInfo() )
+                   StatInfo total_ = StatInfo{} )
       : total( total_ )
     {
       memcpy(memoryType, memoryType_, VK_MAX_MEMORY_TYPES);
       memcpy(memoryHeap, memoryHeap_, VK_MAX_MEMORY_HEAPS);
     }
-#endif
 
     Stats( VmaStats const & rhs )
     {
       *reinterpret_cast<VmaStats*>(this) = rhs;
     }
+#endif
 
     Stats& operator=( VmaStats const & rhs )
     {
@@ -2155,7 +2159,7 @@ namespace VMA_HPP_NAMESPACE {
   public:
     StatInfo memoryType[VK_MAX_MEMORY_TYPES] = {};
     StatInfo memoryHeap[VK_MAX_MEMORY_HEAPS] = {};
-    StatInfo total = StatInfo();
+    StatInfo total = StatInfo{};
   };
   static_assert( sizeof( Stats ) == sizeof( VmaStats ), "struct and wrapper have different size!" );
   static_assert( std::is_standard_layout<Stats>::value, "struct wrapper is not a standard layout!" );
@@ -2172,12 +2176,12 @@ namespace VMA_HPP_NAMESPACE {
       , usage( usage_ )
       , budget( budget_ )
     {}
-#endif
 
     Budget( VmaBudget const & rhs )
     {
       *reinterpret_cast<VmaBudget*>(this) = rhs;
     }
+#endif
 
     Budget& operator=( VmaBudget const & rhs )
     {
