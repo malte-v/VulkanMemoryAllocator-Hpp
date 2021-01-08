@@ -1350,6 +1350,7 @@ namespace VMA_HPP_NAMESPACE {
 
   struct AllocatorCreateInfo
   {
+#if !defined( VMA_HPP_NO_STRUCT_CONSTRUCTORS )
     AllocatorCreateInfo( AllocatorCreateFlags flags_ = AllocatorCreateFlags(),
                                  VULKAN_HPP_NAMESPACE::PhysicalDevice physicalDevice_ = VULKAN_HPP_NAMESPACE::PhysicalDevice(),
                                  VULKAN_HPP_NAMESPACE::Device device_ = VULKAN_HPP_NAMESPACE::Device(),
@@ -1380,6 +1381,7 @@ namespace VMA_HPP_NAMESPACE {
     {
       *reinterpret_cast<VmaAllocatorCreateInfo*>(this) = rhs;
     }
+#endif
 
     AllocatorCreateInfo& operator=( VmaAllocatorCreateInfo const & rhs )
     {
@@ -1491,18 +1493,18 @@ namespace VMA_HPP_NAMESPACE {
     }
 
   public:
-    AllocatorCreateFlags flags;
-    VULKAN_HPP_NAMESPACE::PhysicalDevice physicalDevice;
-    VULKAN_HPP_NAMESPACE::Device device;
-    VULKAN_HPP_NAMESPACE::DeviceSize preferredLargeHeapBlockSize;
-    const VULKAN_HPP_NAMESPACE::AllocationCallbacks* pAllocationCallbacks;
-    const DeviceMemoryCallbacks* pDeviceMemoryCallbacks;
-    uint32_t frameInUseCount;
-    const VULKAN_HPP_NAMESPACE::DeviceSize* pHeapSizeLimit;
-    const VulkanFunctions* pVulkanFunctions;
-    const RecordSettings* pRecordSettings;
-    VULKAN_HPP_NAMESPACE::Instance instance;
-    uint32_t vulkanApiVersion;
+    AllocatorCreateFlags flags= AllocatorCreateFlags();
+    VULKAN_HPP_NAMESPACE::PhysicalDevice physicalDevice = VULKAN_HPP_NAMESPACE::PhysicalDevice();
+    VULKAN_HPP_NAMESPACE::Device device = VULKAN_HPP_NAMESPACE::Device();
+    VULKAN_HPP_NAMESPACE::DeviceSize preferredLargeHeapBlockSize = 0;
+    const VULKAN_HPP_NAMESPACE::AllocationCallbacks* pAllocationCallbacks = nullptr;
+    const DeviceMemoryCallbacks* pDeviceMemoryCallbacks = nullptr;
+    uint32_t frameInUseCount = 0;
+    const VULKAN_HPP_NAMESPACE::DeviceSize* pHeapSizeLimit = nullptr;
+    const VulkanFunctions* pVulkanFunctions = nullptr;
+    const RecordSettings* pRecordSettings = nullptr;
+    VULKAN_HPP_NAMESPACE::Instance instance = VULKAN_HPP_NAMESPACE::Instance();
+    uint32_t vulkanApiVersion = VK_API_VERSION_1_0;
   };
   static_assert( sizeof( AllocatorCreateInfo ) == sizeof( VmaAllocatorCreateInfo ), "struct and wrapper have different size!" );
   static_assert( std::is_standard_layout<AllocatorCreateInfo>::value, "struct wrapper is not a standard layout!" );
