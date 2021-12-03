@@ -369,7 +369,7 @@ namespace VMA_HPP_NAMESPACE {
 
     void getBudget( Budget* pBudget ) const;
 #ifndef VULKAN_HPP_DISABLE_ENHANCED_MODE
-    Budget getBudget() const;
+    std::vector<Budget> getBudget() const;
 #endif /*VULKAN_HPP_DISABLE_ENHANCED_MODE*/
 
 #ifdef VULKAN_HPP_DISABLE_ENHANCED_MODE
@@ -2363,11 +2363,14 @@ namespace VMA_HPP_NAMESPACE {
     ::vmaGetBudget( m_allocator, reinterpret_cast<VmaBudget*>( pBudget ) );
   }
 #ifndef VULKAN_HPP_DISABLE_ENHANCED_MODE
-  VULKAN_HPP_INLINE Budget Allocator::getBudget() const
+  VULKAN_HPP_INLINE std::vector<Budget> Allocator::getBudget() const
   {
-    Budget budget;
-    ::vmaGetBudget( m_allocator, reinterpret_cast<VmaBudget*>( &budget ) );
-    return budget;
+    const VkPhysicalDeviceMemoryProperties* pPhysicalDeviceMemoryProperties = nullptr;
+    vmaGetMemoryProperties(m_allocator, &pPhysicalDeviceMemoryProperties);
+
+    std::vector<Budget> budgets(pPhysicalDeviceMemoryProperties->memoryHeapCount);
+    ::vmaGetBudget( m_allocator, reinterpret_cast<VmaBudget*>( budgets.data(); ) );
+    return budgets;
   }
 #endif /*VULKAN_HPP_DISABLE_ENHANCED_MODE*/
 
