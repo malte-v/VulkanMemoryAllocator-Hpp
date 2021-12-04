@@ -5,18 +5,26 @@ Current VMA version: 2.3.0
 
 Warning: The bindings are not thoroughly tested yet. If you encounter any errors, please open an issue: https://github.com/malte-v/VulkanMemoryAllocator-Hpp/issues/new
 
-Setup
---
+## Setup
 Just copy vk_mem_alloc.h and vk_mem_alloc.hpp to your project.
 
-Usage
---
+## Usage
 ```c++
 // In *one* source file:
 #define VMA_IMPLEMENTATION
 
-// If you don't like the `vma::` prefix:
-#define VMA_HPP_NAMESPACE <prefix>
-
 #include "vk_mem_alloc.hpp"
 ```
+
+## Configuration
+### `namespace`
+If you don't like the `vma::` prefix:
+```c++
+#define VMA_HPP_NAMESPACE <prefix>
+```
+### Designated Initializers
+If you have access to c++20 compiler and want to take advantage of designated initializers:
+```c++
+#define VMA_HPP_NO_STRUCT_CONSTRUCTORS
+```
+See [Vulkan-HPP readme](https://github.com/KhronosGroup/Vulkan-Hpp#designated-initializers).
