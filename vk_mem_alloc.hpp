@@ -2369,7 +2369,7 @@ namespace VMA_HPP_NAMESPACE {
     vmaGetMemoryProperties(m_allocator, &pPhysicalDeviceMemoryProperties);
 
     std::vector<Budget> budgets(pPhysicalDeviceMemoryProperties->memoryHeapCount);
-    ::vmaGetBudget( m_allocator, reinterpret_cast<VmaBudget*>( budgets.data(); ) );
+    ::vmaGetBudget( m_allocator, reinterpret_cast<VmaBudget*>( budgets.data() ) );
     return budgets;
   }
 #endif /*VULKAN_HPP_DISABLE_ENHANCED_MODE*/
