@@ -11,53 +11,37 @@
 #define VMA_HPP_NAMESPACE_STRING VULKAN_HPP_STRINGIFY(VMA_HPP_NAMESPACE)
 
 namespace VMA_HPP_NAMESPACE {
-  class Allocation;
-  class Allocator;
-  class DefragmentationContext;
-  class Pool;
 
-  struct AllocationCreateInfo;
-  struct AllocationInfo;
-  struct AllocatorCreateInfo;
-  struct DefragmentationInfo2;
-  struct DefragmentationStats;
-  struct DeviceMemoryCallbacks;
-  struct PoolCreateInfo;
-  struct PoolStats;
-  struct RecordSettings;
-  struct StatInfo;
-  struct Stats;
-  struct Budget;
-  struct VulkanFunctions;
+class Allocation;
+class Allocator;
+class DefragmentationContext;
+class Pool;
 
-  enum class MemoryUsage
-  {
+struct AllocationCreateInfo;
+struct AllocationInfo;
+struct AllocatorCreateInfo;
+struct DefragmentationInfo2;
+struct DefragmentationStats;
+struct DeviceMemoryCallbacks;
+struct PoolCreateInfo;
+struct PoolStats;
+struct RecordSettings;
+struct StatInfo;
+struct Stats;
+struct Budget;
+struct VulkanFunctions;
+
+enum class MemoryUsage {
     eUnknown = VMA_MEMORY_USAGE_UNKNOWN,
     eGpuOnly = VMA_MEMORY_USAGE_GPU_ONLY,
     eCpuOnly = VMA_MEMORY_USAGE_CPU_ONLY,
     eCpuToGpu = VMA_MEMORY_USAGE_CPU_TO_GPU,
     eGpuToCpu = VMA_MEMORY_USAGE_GPU_TO_CPU,
     eCpuCopy = VMA_MEMORY_USAGE_CPU_COPY,
-    eGpuLazilyAllocated = VMA_MEMORY_USAGE_GPU_LAZILY_ALLOCATED
-  };
+    eGpuLazilyAllocated = VMA_MEMORY_USAGE_GPU_LAZILY_ALLOCATED,
+};
 
-  VULKAN_HPP_INLINE std::string to_string( MemoryUsage value )
-  {
-    switch ( value )
-    {
-      case MemoryUsage::eUnknown : return "Unknown";
-      case MemoryUsage::eGpuOnly : return "GpuOnly";
-      case MemoryUsage::eCpuOnly : return "CpuOnly";
-      case MemoryUsage::eCpuToGpu : return "CpuToGpu";
-      case MemoryUsage::eGpuToCpu : return "GpuToCpu";
-      case MemoryUsage::eCpuCopy : return "CpuCopy";
-      case MemoryUsage::eGpuLazilyAllocated : return "GpuLazilyAllocated";
-      default: return "invalid";
-    }
-  }
-
-  enum class AllocationCreateFlagBits : VmaAllocationCreateFlags
-  {
+enum class AllocationCreateFlagBits : VmaAllocationCreateFlags {
     eDedicatedMemory = VMA_ALLOCATION_CREATE_DEDICATED_MEMORY_BIT,
     eNeverAllocate = VMA_ALLOCATION_CREATE_NEVER_ALLOCATE_BIT,
     eMapped = VMA_ALLOCATION_CREATE_MAPPED_BIT,
@@ -74,7 +58,118 @@ namespace VMA_HPP_NAMESPACE {
     eStrategyMinTime = VMA_ALLOCATION_CREATE_STRATEGY_MIN_TIME_BIT,
     eStrategyMinFragmentation = VMA_ALLOCATION_CREATE_STRATEGY_MIN_FRAGMENTATION_BIT,
     eStrategyMask = VMA_ALLOCATION_CREATE_STRATEGY_MASK
-  };
+};
+
+using AllocationCreateFlags = VULKAN_HPP_NAMESPACE::Flags<AllocationCreateFlagBits>;
+
+enum class AllocatorCreateFlagBits : VmaAllocatorCreateFlags {
+    eExternallySynchronized = VMA_ALLOCATOR_CREATE_EXTERNALLY_SYNCHRONIZED_BIT,
+    eKhrDedicatedAllocation = VMA_ALLOCATOR_CREATE_KHR_DEDICATED_ALLOCATION_BIT,
+    eKhrBindMemory2 = VMA_ALLOCATOR_CREATE_KHR_BIND_MEMORY2_BIT,
+    eExtMemoryBudget = VMA_ALLOCATOR_CREATE_EXT_MEMORY_BUDGET_BIT,
+    eAmdDeviceCoherentMemory = VMA_ALLOCATOR_CREATE_AMD_DEVICE_COHERENT_MEMORY_BIT,
+    eBufferDeviceAddress = VMA_ALLOCATOR_CREATE_BUFFER_DEVICE_ADDRESS_BIT,
+    eExtMemoryPriority = VMA_ALLOCATOR_CREATE_EXT_MEMORY_PRIORITY_BIT
+};
+
+using AllocatorCreateFlags = VULKAN_HPP_NAMESPACE::Flags<AllocatorCreateFlagBits>;
+
+enum class DefragmentationFlagBits : VmaDefragmentationFlags { eIncremental = VMA_DEFRAGMENTATION_FLAG_INCREMENTAL };
+
+using DefragmentationFlags = VULKAN_HPP_NAMESPACE::Flags<DefragmentationFlagBits>;
+
+enum class PoolCreateFlagBits : VmaPoolCreateFlags {
+    eIgnoreBufferImageGranularity = VMA_POOL_CREATE_IGNORE_BUFFER_IMAGE_GRANULARITY_BIT,
+    eLinearAlgorithm = VMA_POOL_CREATE_LINEAR_ALGORITHM_BIT,
+    eBuddyAlgorithm = VMA_POOL_CREATE_BUDDY_ALGORITHM_BIT,
+    eAlgorithmMask = VMA_POOL_CREATE_ALGORITHM_MASK
+};
+
+using PoolCreateFlags = VULKAN_HPP_NAMESPACE::Flags<PoolCreateFlagBits>;
+
+enum class RecordFlagBits : VmaRecordFlags { eFlushAfterCall = VMA_RECORD_FLUSH_AFTER_CALL_BIT };
+
+using RecordFlags = VULKAN_HPP_NAMESPACE::Flags<RecordFlagBits>;
+
+}    // namespace VMA_HPP_NAMESPACE
+
+namespace VULKAN_HPP_NAMESPACE
+{
+template <>
+struct FlagTraits<VMA_HPP_NAMESPACE::AllocationCreateFlagBits> {
+    enum : VkFlags {
+        allFlags = VkFlags(VMA_HPP_NAMESPACE::AllocationCreateFlagBits::eDedicatedMemory) |
+                   VkFlags(VMA_HPP_NAMESPACE::AllocationCreateFlagBits::eNeverAllocate) |
+                   VkFlags(VMA_HPP_NAMESPACE::AllocationCreateFlagBits::eMapped) |
+                   VkFlags(VMA_HPP_NAMESPACE::AllocationCreateFlagBits::eCanBecomeLost) |
+                   VkFlags(VMA_HPP_NAMESPACE::AllocationCreateFlagBits::eCanMakeOtherLost) |
+                   VkFlags(VMA_HPP_NAMESPACE::AllocationCreateFlagBits::eUserDataCopyString) |
+                   VkFlags(VMA_HPP_NAMESPACE::AllocationCreateFlagBits::eUpperAddress) |
+                   VkFlags(VMA_HPP_NAMESPACE::AllocationCreateFlagBits::eDontBind) |
+                   VkFlags(VMA_HPP_NAMESPACE::AllocationCreateFlagBits::eWithinBudget) |
+                   VkFlags(VMA_HPP_NAMESPACE::AllocationCreateFlagBits::eStrategyBestFit) |
+                   VkFlags(VMA_HPP_NAMESPACE::AllocationCreateFlagBits::eStrategyWorstFit) |
+                   VkFlags(VMA_HPP_NAMESPACE::AllocationCreateFlagBits::eStrategyFirstFit) |
+                   VkFlags(VMA_HPP_NAMESPACE::AllocationCreateFlagBits::eStrategyMinMemory) |
+                   VkFlags(VMA_HPP_NAMESPACE::AllocationCreateFlagBits::eStrategyMinTime) |
+                   VkFlags(VMA_HPP_NAMESPACE::AllocationCreateFlagBits::eStrategyMinFragmentation) |
+                   VkFlags(VMA_HPP_NAMESPACE::AllocationCreateFlagBits::eStrategyMask)
+    };
+};
+
+template <>
+struct FlagTraits<VMA_HPP_NAMESPACE::AllocatorCreateFlagBits> {
+    enum : VkFlags {
+        allFlags = VkFlags(VMA_HPP_NAMESPACE::AllocatorCreateFlagBits::eExternallySynchronized) |
+                   VkFlags(VMA_HPP_NAMESPACE::AllocatorCreateFlagBits::eKhrDedicatedAllocation) |
+                   VkFlags(VMA_HPP_NAMESPACE::AllocatorCreateFlagBits::eKhrBindMemory2) |
+                   VkFlags(VMA_HPP_NAMESPACE::AllocatorCreateFlagBits::eExtMemoryBudget) |
+                   VkFlags(VMA_HPP_NAMESPACE::AllocatorCreateFlagBits::eAmdDeviceCoherentMemory) |
+                   VkFlags(VMA_HPP_NAMESPACE::AllocatorCreateFlagBits::eBufferDeviceAddress) |
+                   VkFlags(VMA_HPP_NAMESPACE::AllocatorCreateFlagBits::eExtMemoryPriority)
+    };
+};
+
+template <>
+struct FlagTraits<VMA_HPP_NAMESPACE::DefragmentationFlagBits> {
+    enum : VkFlags { allFlags = VkFlags(VMA_HPP_NAMESPACE::DefragmentationFlagBits::eIncremental) };
+};
+
+template <>
+struct FlagTraits<VMA_HPP_NAMESPACE::PoolCreateFlagBits> {
+    enum : VkFlags {
+        allFlags =
+
+            VkFlags(VMA_HPP_NAMESPACE::PoolCreateFlagBits::eIgnoreBufferImageGranularity) |
+            VkFlags(VMA_HPP_NAMESPACE::PoolCreateFlagBits::eLinearAlgorithm) |
+            VkFlags(VMA_HPP_NAMESPACE::PoolCreateFlagBits::eBuddyAlgorithm) |
+            VkFlags(VMA_HPP_NAMESPACE::PoolCreateFlagBits::eAlgorithmMask)
+    };
+};
+
+template <>
+struct FlagTraits<VMA_HPP_NAMESPACE::RecordFlagBits> {
+    enum : VkFlags { allFlags = VkFlags(VMA_HPP_NAMESPACE::RecordFlagBits::eFlushAfterCall) };
+};
+
+}    // namespace VULKAN_HPP_NAMESPACE
+
+namespace VMA_HPP_NAMESPACE
+{
+
+VULKAN_HPP_INLINE std::string to_string(MemoryUsage value)
+{
+    switch (value) {
+        case MemoryUsage::eUnknown: return "Unknown";
+        case MemoryUsage::eGpuOnly: return "GpuOnly";
+        case MemoryUsage::eCpuOnly: return "CpuOnly";
+        case MemoryUsage::eCpuToGpu: return "CpuToGpu";
+        case MemoryUsage::eGpuToCpu: return "GpuToCpu";
+        case MemoryUsage::eCpuCopy: return "CpuCopy";
+        case MemoryUsage::eGpuLazilyAllocated: return "GpuLazilyAllocated";
+        default: return "invalid";
+    }
+}
 
   VULKAN_HPP_INLINE std::string to_string( AllocationCreateFlagBits value )
   {
@@ -95,8 +190,6 @@ namespace VMA_HPP_NAMESPACE {
       default: return "invalid";
     }
   }
-
-  using AllocationCreateFlags = VULKAN_HPP_NAMESPACE::Flags<AllocationCreateFlagBits>;
 
   VULKAN_HPP_INLINE AllocationCreateFlags operator|( AllocationCreateFlagBits bit0, AllocationCreateFlagBits bit1 )
   {
@@ -131,17 +224,6 @@ namespace VMA_HPP_NAMESPACE {
     return "{ " + result.substr(0, result.size() - 3) + " }";
   }
 
-  enum class AllocatorCreateFlagBits : VmaAllocatorCreateFlags
-  {
-    eExternallySynchronized = VMA_ALLOCATOR_CREATE_EXTERNALLY_SYNCHRONIZED_BIT,
-    eKhrDedicatedAllocation = VMA_ALLOCATOR_CREATE_KHR_DEDICATED_ALLOCATION_BIT,
-    eKhrBindMemory2 = VMA_ALLOCATOR_CREATE_KHR_BIND_MEMORY2_BIT,
-    eExtMemoryBudget = VMA_ALLOCATOR_CREATE_EXT_MEMORY_BUDGET_BIT,
-    eAmdDeviceCoherentMemory = VMA_ALLOCATOR_CREATE_AMD_DEVICE_COHERENT_MEMORY_BIT,
-    eBufferDeviceAddress = VMA_ALLOCATOR_CREATE_BUFFER_DEVICE_ADDRESS_BIT,
-    eExtMemoryPriority = VMA_ALLOCATOR_CREATE_EXT_MEMORY_PRIORITY_BIT
-  };
-
   VULKAN_HPP_INLINE std::string to_string( AllocatorCreateFlagBits value )
   {
     switch ( value )
@@ -156,8 +238,6 @@ namespace VMA_HPP_NAMESPACE {
       default: return "invalid";
     }
   }
-
-  using AllocatorCreateFlags = VULKAN_HPP_NAMESPACE::Flags<AllocatorCreateFlagBits>;
 
   VULKAN_HPP_INLINE AllocatorCreateFlags operator|( AllocatorCreateFlagBits bit0, AllocatorCreateFlagBits bit1 )
   {
@@ -184,11 +264,6 @@ namespace VMA_HPP_NAMESPACE {
     return "{ " + result.substr(0, result.size() - 3) + " }";
   }
 
-  enum class DefragmentationFlagBits : VmaDefragmentationFlags
-  {
-      eIncremental = VMA_DEFRAGMENTATION_FLAG_INCREMENTAL
-  };
-
   VULKAN_HPP_INLINE std::string to_string( DefragmentationFlagBits value )
   {
     switch ( value )
@@ -197,8 +272,6 @@ namespace VMA_HPP_NAMESPACE {
       default: return "invalid";
     }
   }
-
-  using DefragmentationFlags = VULKAN_HPP_NAMESPACE::Flags<DefragmentationFlagBits>;
 
   VULKAN_HPP_INLINE DefragmentationFlags operator|( DefragmentationFlagBits bit0, DefragmentationFlagBits bit1 )
   {
@@ -219,14 +292,6 @@ namespace VMA_HPP_NAMESPACE {
     return "{ " + result.substr(0, result.size() - 3) + " }";
   }
 
-  enum class PoolCreateFlagBits : VmaPoolCreateFlags
-  {
-    eIgnoreBufferImageGranularity = VMA_POOL_CREATE_IGNORE_BUFFER_IMAGE_GRANULARITY_BIT,
-    eLinearAlgorithm = VMA_POOL_CREATE_LINEAR_ALGORITHM_BIT,
-    eBuddyAlgorithm = VMA_POOL_CREATE_BUDDY_ALGORITHM_BIT,
-    eAlgorithmMask = VMA_POOL_CREATE_ALGORITHM_MASK
-  };
-
   VULKAN_HPP_INLINE std::string to_string( PoolCreateFlagBits value )
   {
     switch ( value )
@@ -238,8 +303,6 @@ namespace VMA_HPP_NAMESPACE {
       default: return "invalid";
     }
   }
-
-  using PoolCreateFlags = VULKAN_HPP_NAMESPACE::Flags<PoolCreateFlagBits>;
 
   VULKAN_HPP_INLINE PoolCreateFlags operator|( PoolCreateFlagBits bit0, PoolCreateFlagBits bit1 )
   {
@@ -261,12 +324,6 @@ namespace VMA_HPP_NAMESPACE {
     if ( value & PoolCreateFlagBits::eBuddyAlgorithm ) result += "BuddyAlgorithm | ";
     return "{ " + result.substr(0, result.size() - 3) + " }";
   }
-
-  enum class RecordFlagBits : VmaRecordFlags
-  {
-    eFlushAfterCall = VMA_RECORD_FLUSH_AFTER_CALL_BIT
-  };
-
   VULKAN_HPP_INLINE std::string to_string( RecordFlagBits value )
   {
     switch ( value )
@@ -275,8 +332,6 @@ namespace VMA_HPP_NAMESPACE {
       default: return "invalid";
     }
   }
-
-  using RecordFlags = VULKAN_HPP_NAMESPACE::Flags<RecordFlagBits>;
 
   VULKAN_HPP_INLINE RecordFlags operator|( RecordFlagBits bit0, RecordFlagBits bit1 )
   {
@@ -2875,6 +2930,6 @@ namespace VMA_HPP_NAMESPACE {
     ::vmaUnmapMemory( m_allocator, static_cast<VmaAllocation>( allocation ) );
   }
 #endif /*VULKAN_HPP_DISABLE_ENHANCED_MODE*/
-}
+  }    // namespace VMA_HPP_NAMESPACE
 
 #endif
