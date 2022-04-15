@@ -92,11 +92,36 @@ namespace VMA_HPP_NAMESPACE {
       case AllocationCreateFlagBits::eStrategyBestFit : return "StrategyBestFit";
       case AllocationCreateFlagBits::eStrategyWorstFit : return "StrategyWorstFit";
       case AllocationCreateFlagBits::eStrategyFirstFit : return "StrategyFirstFit";
+      case AllocationCreateFlagBits::eStrategyMinMemory : return "StrategyMinMemory";
+      case AllocationCreateFlagBits::eStrategyMinTime : return "StrategyMinTime";
+      case AllocationCreateFlagBits::eStrategyMinFragmentation : return "StrategyMinFragmentation";
       default: return "invalid";
     }
   }
 
   using AllocationCreateFlags = VULKAN_HPP_NAMESPACE::Flags<AllocationCreateFlagBits>;
+
+  template <>
+  struct FlagTraits<AllocationCreateFlagBits>
+  {
+    enum : VkFlags
+    {
+      allFlags = VkFlags( AllocationCreateFlagBits::eDedicatedMemory ) |
+                 VkFlags( AllocationCreateFlagBits::eNeverAllocate ) |
+                 VkFlags( AllocationCreateFlagBits::eMapped ) |
+                 VkFlags( AllocationCreateFlagBits::eCanBecomeLost ) |
+                 VkFlags( AllocationCreateFlagBits::eUserDataCopyString ) |
+                 VkFlags( AllocationCreateFlagBits::eUpperAddress ) |
+                 VkFlags( AllocationCreateFlagBits::eDontBind ) |
+                 VkFlags( AllocationCreateFlagBits::eWithinBudget ) |
+                 VkFlags( AllocationCreateFlagBits::eStrategyBestFit ) |
+                 VkFlags( AllocationCreateFlagBits::eStrategyWorstFit ) |
+                 VkFlags( AllocationCreateFlagBits::eStrategyFirstFit ) |
+                 VkFlags( AllocationCreateFlagBits::eStrategyMinMemory ) |
+                 VkFlags( AllocationCreateFlagBits::eStrategyMinTime ) |
+                 VkFlags( AllocationCreateFlagBits::eStrategyMinFragmentation )
+    };
+  };
 
   VULKAN_HPP_INLINE AllocationCreateFlags operator|( AllocationCreateFlagBits bit0, AllocationCreateFlagBits bit1 )
   {
@@ -159,6 +184,21 @@ namespace VMA_HPP_NAMESPACE {
 
   using AllocatorCreateFlags = VULKAN_HPP_NAMESPACE::Flags<AllocatorCreateFlagBits>;
 
+  template <>
+  struct FlagTraits<AllocatorCreateFlagBits>
+  {
+    enum : VkFlags
+    {
+      allFlags = VkFlags( AllocatorCreateFlagBits::eExternallySynchronized ) |
+                 VkFlags( AllocatorCreateFlagBits::eKhrDedicatedAllocation ) |
+                 VkFlags( AllocatorCreateFlagBits::eKhrBindMemory2 ) |
+                 VkFlags( AllocatorCreateFlagBits::eExtMemoryBudget ) |
+                 VkFlags( AllocatorCreateFlagBits::eAmdDeviceCoherentMemory ) |
+                 VkFlags( AllocatorCreateFlagBits::eBufferDeviceAddress ) |
+                 VkFlags( AllocatorCreateFlagBits::eExtMemoryPriority )
+    };
+  };
+
   VULKAN_HPP_INLINE AllocatorCreateFlags operator|( AllocatorCreateFlagBits bit0, AllocatorCreateFlagBits bit1 )
   {
     return AllocatorCreateFlags( bit0 ) | bit1;
@@ -199,6 +239,15 @@ namespace VMA_HPP_NAMESPACE {
   }
 
   using DefragmentationFlags = VULKAN_HPP_NAMESPACE::Flags<DefragmentationFlagBits>;
+
+  template <>
+  struct FlagTraits<DefragmentationFlagBits>
+  {
+    enum : VkFlags
+    {
+      allFlags = VkFlags( DefragmentationFlagBits::eIncremental )
+    };
+  };
 
   VULKAN_HPP_INLINE DefragmentationFlags operator|( DefragmentationFlagBits bit0, DefragmentationFlagBits bit1 )
   {
@@ -241,6 +290,17 @@ namespace VMA_HPP_NAMESPACE {
 
   using PoolCreateFlags = VULKAN_HPP_NAMESPACE::Flags<PoolCreateFlagBits>;
 
+  template <>
+  struct FlagTraits<PoolCreateFlagBits>
+  {
+    enum : VkFlags
+    {
+      allFlags = VkFlags( PoolCreateFlagBits::eIgnoreBufferImageGranularity ) |
+                 VkFlags( PoolCreateFlagBits::eLinearAlgorithm ) |
+                 VkFlags( PoolCreateFlagBits::eBuddyAlgorithm )
+	};
+  };
+
   VULKAN_HPP_INLINE PoolCreateFlags operator|( PoolCreateFlagBits bit0, PoolCreateFlagBits bit1 )
   {
     return PoolCreateFlags( bit0 ) | bit1;
@@ -277,6 +337,15 @@ namespace VMA_HPP_NAMESPACE {
   }
 
   using RecordFlags = VULKAN_HPP_NAMESPACE::Flags<RecordFlagBits>;
+
+  template <>
+  struct FlagTraits<RecordFlagBits>
+  {
+    enum : VkFlags
+    {
+      allFlags = VkFlags( RecordFlagBits::eFlushAfterCall )
+	};
+  };
 
   VULKAN_HPP_INLINE RecordFlags operator|( RecordFlagBits bit0, RecordFlagBits bit1 )
   {
